@@ -186,74 +186,6 @@
         }
       ]
     },
-    "method_definition": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "method"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "!"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "identifier"
-                },
-                {
-                  "type": "STRING",
-                  "value": ":"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "typespec"
-                },
-                {
-                  "type": "STRING",
-                  "value": ";"
-                }
-              ]
-            },
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "type_tuple"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "identifier"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "type_tuple"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "function_body"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
     "class_definition": {
       "type": "SEQ",
       "members": [
@@ -344,6 +276,74 @@
         {
           "type": "SYMBOL",
           "name": "identifier"
+        }
+      ]
+    },
+    "method_definition": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "method"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "!"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "STRING",
+                  "value": ":"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "typespec"
+                },
+                {
+                  "type": "STRING",
+                  "value": ";"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "type_tuple"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "type_tuple"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "function_body"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -587,7 +587,7 @@
         }
       ]
     },
-    "type": {
+    "typeunit": {
       "type": "CHOICE",
       "members": [
         {
@@ -596,15 +596,27 @@
         },
         {
           "type": "SYMBOL",
-          "name": "basic_type"
+          "name": "simple_type"
         },
         {
           "type": "SYMBOL",
-          "name": "type_tuple"
+          "name": "rank_tuple"
         },
         {
           "type": "SYMBOL",
           "name": "element_type"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "keyval_type"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "tensor_type"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "trigger_type"
         },
         {
           "type": "SYMBOL",
@@ -617,7 +629,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "type"
+          "name": "typeunit"
         },
         {
           "type": "SEQ",
@@ -646,7 +658,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "type"
+              "name": "typeunit"
             },
             {
               "type": "SYMBOL",
@@ -659,7 +671,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "type"
+              "name": "typeunit"
             },
             {
               "type": "STRING",
@@ -676,7 +688,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "type"
+              "name": "typeunit"
             },
             {
               "type": "STRING",
@@ -710,18 +722,6 @@
     "type_tuple": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "rank"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
         {
           "type": "STRING",
           "value": "<"
@@ -765,7 +765,28 @@
         }
       ]
     },
-    "basic_type": {
+    "rank_tuple": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "rank"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "type_tuple"
+        }
+      ]
+    },
+    "simple_type": {
       "type": "CHOICE",
       "members": [
         {
@@ -890,10 +911,6 @@
             },
             {
               "type": "STRING",
-              "value": "tensor"
-            },
-            {
-              "type": "STRING",
               "value": "deque"
             },
             {
@@ -922,17 +939,63 @@
             },
             {
               "type": "STRING",
+              "value": "idxmap"
+            },
+            {
+              "type": "STRING",
               "value": "in"
             },
             {
               "type": "STRING",
               "value": "out"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "typespec"
+        },
+        {
+          "type": "STRING",
+          "value": ">"
+        }
+      ]
+    },
+    "keyval_type": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "ordmap"
             },
             {
               "type": "STRING",
-              "value": "trigger"
+              "value": "map"
             }
           ]
+        },
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "typespec"
+        },
+        {
+          "type": "STRING",
+          "value": ">"
+        },
+        {
+          "type": "STRING",
+          "value": "to"
         },
         {
           "type": "STRING",
@@ -973,19 +1036,23 @@
         }
       ]
     },
-    "map_type": {
+    "trigger_type": {
       "type": "SEQ",
       "members": [
+        {
+          "type": "STRING",
+          "value": "trigger"
+        },
         {
           "type": "CHOICE",
           "members": [
             {
               "type": "STRING",
-              "value": "ordmap"
+              "value": "in"
             },
             {
               "type": "STRING",
-              "value": "map"
+              "value": "out"
             }
           ]
         },
@@ -1063,19 +1130,6 @@
         {
           "type": "SYMBOL",
           "name": "typespec"
-        }
-      ]
-    },
-    "qualified_type": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "shared"
-        },
-        {
-          "type": "STRING",
-          "value": "const"
         }
       ]
     },
@@ -1188,6 +1242,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "cast_expression"
+        },
+        {
+          "type": "SYMBOL",
           "name": "function_call"
         },
         {
@@ -1291,46 +1349,6 @@
                   {
                     "type": "STRING",
                     "value": "%"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "="
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "+="
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "-="
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "*="
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "/="
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "%="
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "|="
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "&="
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "^="
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "~="
                   }
                 ]
               },
@@ -1385,6 +1403,19 @@
           }
         ]
       }
+    },
+    "cast_expression": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "type_tuple"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "tuple_expression"
+        }
+      ]
     },
     "function_call": {
       "type": "SEQ",
@@ -1494,11 +1525,52 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "identifier"
+          "name": "expression"
         },
         {
-          "type": "STRING",
-          "value": "="
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "="
+            },
+            {
+              "type": "STRING",
+              "value": "+="
+            },
+            {
+              "type": "STRING",
+              "value": "-="
+            },
+            {
+              "type": "STRING",
+              "value": "*="
+            },
+            {
+              "type": "STRING",
+              "value": "/="
+            },
+            {
+              "type": "STRING",
+              "value": "%="
+            },
+            {
+              "type": "STRING",
+              "value": "|="
+            },
+            {
+              "type": "STRING",
+              "value": "&="
+            },
+            {
+              "type": "STRING",
+              "value": "^="
+            },
+            {
+              "type": "STRING",
+              "value": "~="
+            }
+          ]
         },
         {
           "type": "SYMBOL",

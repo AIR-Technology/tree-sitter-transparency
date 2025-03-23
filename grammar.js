@@ -50,13 +50,6 @@ module.exports = grammar({
       $.function_body
     ),
 
-    method_definition: $ => seq(
-      "method", 
-      optional("!"), // final
-      choice(seq($.identifier, ":", $.typespec, ";"),                        // data method
-             seq($.type_tuple, $.identifier, $.type_tuple, $.function_body)) // function method
-    ),
-
     class_definition: $ => seq(
       choice("class", "node"),
       $.identifier,
@@ -72,6 +65,13 @@ module.exports = grammar({
     base_specifier: $ => seq(
       optional("common"),
       $.identifier
+    ),
+
+    method_definition: $ => seq(
+      "method", 
+      optional("!"), // final
+      choice(seq($.identifier, ":", $.typespec, ";"),                        // data method
+             seq($.type_tuple, $.identifier, $.type_tuple, $.function_body)) // function method
     ),
 
     variable_definition: $ => seq(
@@ -114,27 +114,32 @@ module.exports = grammar({
       "}"
     ),
 
-    type: $ => choice(
+    typeunit: $ => choice(
       $.identifier,
-      $.basic_type,
-      $.type_tuple,
+      $.simple_type,
+      $.rank_tuple,
       $.element_type,
+      $.keyval_type,
+      $.tensor_type,
+      $.trigger_type,
       $.signature_type,
     ),
 
     typespec: $ => choice(
-      $.type,
+      $.typeunit,
       seq(choice("shared", "const"), $.typespec),
-      seq($.type, $.type_ctor_args),
-      seq($.type, "<-", $.type_tuple),
-      seq($.type, "+", $.typespec)
+      seq($.typeunit, $.type_ctor_args),
+      seq($.typeunit, "<-", $.type_tuple),
+      seq($.typeunit, "+", $.typespec)
     ),
 
     rank: $ => seq("{", $.intlit, "}"),
 
-    type_tuple: $ => seq(optional($.rank), "<", optional(seq($.typespec, repeat(seq(",", $.typespec)))), ">"),
+    type_tuple: $ => seq("<", optional(seq($.typespec, repeat(seq(",", $.typespec)))), ">"),
 
-    basic_type: $ => choice(
+    rank_tuple: $ => seq(optional($.rank), $.type_tuple),
+
+    simple_type: $ => choice(
       "string", "symbol", "regex", "match", "blob",
       "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64",
       "float32", "float64", "codepoint", "bool",
@@ -144,23 +149,25 @@ module.exports = grammar({
     ),
 
     element_type: $ => seq(
-      choice("vector", "tensor", "deque", "pqueue", "wire", "set", "ordset", "list", "table", "in", "out", "trigger"),
+      choice("vector", "deque", "pqueue", "wire", "set", "ordset", "list", "table", "idxmap", "in", "out"),
       "<", $.typespec, ">"
     ),
 
+    keyval_type: $ => seq(choice("ordmap", "map"), "<", $.typespec, ">", "to", "<", $.typespec, ">"),
+
     tensor_type: $ => seq("tensor", $.rank, "<", $.typespec, ">"),
 
-    map_type: $ => seq(choice("ordmap", "map"), "<", $.typespec, ">"),
+    trigger_type: $ => seq(
+      "trigger",
+      choice("in", "out"),
+      "<", $.typespec, ">"
+    ),
 
     signature_type: $ => seq(
       "[", optional(seq($.method_signature, repeat(seq(",", $.method_signature)))), "]"
     ),
 
     method_signature: $ => seq($.identifier, ":", $.typespec),
-
-    qualified_type: $ => choice(
-      "shared", "const"
-    ),
 
     type_ctor_args: $ => seq(
       "[", optional(seq($.expression, repeat(seq(",", $.expression)))), "]"
@@ -174,6 +181,7 @@ module.exports = grammar({
       $.binary_expression,
       $.unary_expression,
       $.tuple_expression,
+      $.cast_expression,
       $.function_call,
       $.literal,
       $.identifier
@@ -182,14 +190,15 @@ module.exports = grammar({
     binary_expression: $ => prec.left(choice(
       seq($.expression, choice(
         "||", "&&", "==", "!=", "<", ">", "<=", ">=", 
-        "|", "^", "~", "&", "<~", "~>", "+", "-", "*", "/", "%",
-        "=", "+=", "-=", "*=", "/=", "%=", "|=", "&=", "^=", "~="
+        "|", "^", "~", "&", "<~", "~>", "+", "-", "*", "/", "%"
       ), $.expression)
     )),
 
     unary_expression: $ => prec.right(choice(
       seq(choice("-", "+", "!", "~", "\\"), $.expression)
     )),
+
+    cast_expression: $ => seq($.type_tuple, $.tuple_expression),
 
     function_call: $ => seq($.identifier, "(", optional(seq($.expression, repeat(seq(",", $.expression)))), ")"),
 
@@ -204,7 +213,10 @@ module.exports = grammar({
       $.return_statement
     ), ";"),
  
-    assignment: $ => seq($.identifier, "=", $.expression),
+    assignment: $ => seq($.expression,
+			 choice("=", "+=", "-=", "*=", "/=", "%=", "|=", "&=", "^=", "~="),
+			 $.expression),
+
     node_instantiation: $ => seq("node", optional($.intlit), optional($.strlit), $.expression),
     circuit_instantiation: $ => seq("circuit", optional($.intlit), $.expression),
     fork_statement: $ => seq(choice("fork", "spawn"), $.expression),
@@ -212,7 +224,7 @@ module.exports = grammar({
 
     pragma: $ => seq("#", choice("echo", "expect", "meta", "xml"), optional($.expression)),
 
-    // this is for things like rank that require a simple decimal integer literal
+    // a handful of spots in the Transparency grammar require a simple decimal or string literal
     intlit: $ => token(/[0-9]+/),
     strlit: $ => token(/"[^"]+"/),
       
