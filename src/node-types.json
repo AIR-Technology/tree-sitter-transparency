@@ -476,6 +476,10 @@
           "named": true
         },
         {
+          "type": "codepoint_literal",
+          "named": true
+        },
+        {
           "type": "number_literal",
           "named": true
         },
@@ -1044,6 +1048,10 @@
   {
     "type": "codepoint",
     "named": false
+  },
+  {
+    "type": "codepoint_literal",
+    "named": true
   },
   {
     "type": "comment",

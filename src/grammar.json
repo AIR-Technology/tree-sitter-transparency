@@ -1752,7 +1752,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "rawstring_literal"
+          "name": "codepoint_literal"
         },
         {
           "type": "SYMBOL",
@@ -1761,6 +1761,10 @@
         {
           "type": "SYMBOL",
           "name": "regex_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "rawstring_literal"
         }
       ]
     },
@@ -1768,7 +1772,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[0-9][0-9a-fA-Fx._]*([uUzZsS][0-9]+)?"
+        "value": "[0-9][0-9a-fA-Fx._]*([uUzZsS][0-9]*)?"
       }
     },
     "string_literal": {
@@ -1782,7 +1786,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "'([^'\\\\]|\\\\.)*'"
+        "value": "('([^'\\\\]|\\\\.)*')|\\\\u[0-9a-fA-F]+"
       }
     },
     "boolean_literal": {

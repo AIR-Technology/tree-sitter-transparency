@@ -231,14 +231,15 @@ module.exports = grammar({
     literal: $ => choice(
       $.number_literal,
       $.string_literal,
-      $.rawstring_literal,
+      $.codepoint_literal,
       $.boolean_literal,
-      $.regex_literal
+      $.regex_literal,
+      $.rawstring_literal
     ),
 
-    number_literal: $ => token(/[0-9][0-9a-fA-Fx._]*([uUzZsS][0-9]+)?/),
+    number_literal: $ => token(/[0-9][0-9a-fA-Fx._]*([uUzZsS][0-9]*)?/),
     string_literal: $ => token(/"([^"\\]|\\.)*"/),
-    codepoint_literal: $ => token(/'([^'\\]|\\.)*'/),
+    codepoint_literal: $ => token(/('([^'\\]|\\.)*')|\\u[0-9a-fA-F]+/),
     boolean_literal: $ => choice("true", "false"),
     regex_literal: $ => token(seq("‹", /[^‹›]*/s, "›")),
     rawstring_literal: $ => token(seq("“", /[^“”]*/s, "”")),
