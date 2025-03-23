@@ -1,3 +1,6 @@
+# emacs artifacts
+*~
+
 # Rust artifacts
 target/
 
