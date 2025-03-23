@@ -65,6 +65,21 @@
     "fields": {}
   },
   {
+    "type": "call_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "cast_expression",
     "named": true,
     "fields": {},
@@ -326,15 +341,19 @@
           "named": true
         },
         {
+          "type": "call_expression",
+          "named": true
+        },
+        {
           "type": "cast_expression",
           "named": true
         },
         {
-          "type": "function_call",
+          "type": "identifier",
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "index_expression",
           "named": true
         },
         {
@@ -387,25 +406,6 @@
     }
   },
   {
-    "type": "function_call",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "function_definition",
     "named": true,
     "fields": {},
@@ -447,6 +447,21 @@
     "type": "identifier",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "index_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "keyval_type",
@@ -527,6 +542,25 @@
   },
   {
     "type": "method_signature",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "typespec",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "namedtypespec",
     "named": true,
     "fields": {},
     "children": {
@@ -767,7 +801,7 @@
       "required": false,
       "types": [
         {
-          "type": "typespec",
+          "type": "namedtypespec",
           "named": true
         }
       ]

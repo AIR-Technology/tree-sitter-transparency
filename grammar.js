@@ -133,9 +133,11 @@ module.exports = grammar({
       seq($.typeunit, "+", $.typespec)
     ),
 
+    namedtypespec: $ => seq($.typespec, optional($.identifier)),
+
     rank: $ => seq("{", $.intlit, "}"),
 
-    type_tuple: $ => seq("<", optional(seq($.typespec, repeat(seq(",", $.typespec)))), ">"),
+    type_tuple: $ => seq("<", optional(seq($.namedtypespec, repeat(seq(",", $.namedtypespec)))), ">"),
 
     rank_tuple: $ => seq(optional($.rank), $.type_tuple),
 
@@ -182,7 +184,8 @@ module.exports = grammar({
       $.unary_expression,
       $.tuple_expression,
       $.cast_expression,
-      $.function_call,
+      $.index_expression,
+      $.call_expression,
       $.literal,
       $.identifier
     ),
@@ -200,7 +203,9 @@ module.exports = grammar({
 
     cast_expression: $ => seq($.type_tuple, $.tuple_expression),
 
-    function_call: $ => seq($.identifier, "(", optional(seq($.expression, repeat(seq(",", $.expression)))), ")"),
+    call_expression: $ => seq($.expression, "(", optional(seq($.expression, repeat(seq(",", $.expression)))), ")"),
+
+    index_expression: $ => seq($.expression, "[", seq($.expression, repeat(seq(",", $.expression))), "]"),
 
     // this grammar allows quoted and scoped identifiers everywhere, for simplicity
     identifier: $ => choice(token(/«[^»\n]+»/), token(/[a-zA-Z_\$][a-zA-Z0-9_]*(::[a-zA-Z_\$][a-zA-Z0-9_]*)*/)),
