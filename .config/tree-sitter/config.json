@@ -1,0 +1,22 @@
+{
+    "parser-directories": [
+
+	"/home/luddy/GITHUB"
+
+    ],
+
+    "theme": {
+
+	"builtin": "#808080",
+	"format": "#ffd000",
+	"comment": { "color": "#cd2626", "italic": true },
+	"constant": "#c0e0d0",
+	"keyword": "#10b0ff",
+	"multiline": "#00f000",
+	"preprocessor": "#00f000",
+	"punctuation": "#a0a0f0",
+	"string": "#b668f2",
+	"type": "##48d1cc"
+
+    }
+}

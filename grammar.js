@@ -19,8 +19,14 @@ module.exports = grammar({
 
     source_file: $ => repeat(choice($.definition, $.definition_statement, $.pragma)),
     class_body: $ => seq("{", repeat(choice($.definition, $.definition_statement)), "}"),
-    function_body: $ => choice(seq("{", repeat(choice($.definition_statement, $.executable_statement)), "}"), ";"),
 
+    // a scope (function body or controlled statement, etc.) may be { ... } or ; (empty)
+    scope: $ => choice(seq("{", repeat(choice($.definition_statement, $.executable_statement)), "}"), ";"),
+
+    // a handful of spots in the Transparency grammar require a simple decimal or string literal
+    intlit: $ => token(/[0-9]+/),
+    strlit: $ => token(/"[^"]+"/),
+      
     definition: $ => choice(
 	$.class_definition,
 	$.circuit_definition,
@@ -40,14 +46,14 @@ module.exports = grammar({
       $.type_tuple, 
       $.identifier, 
       $.type_tuple,
-      $.function_body
+      $.scope
     ),
 
     circuit_definition: $ => seq(
       alias("circuit", $.keyword),
       $.identifier,
       $.type_tuple,
-      $.function_body
+      $.scope
     ),
 
     class_definition: $ => seq(
@@ -70,8 +76,8 @@ module.exports = grammar({
     method_definition: $ => seq(
       alias("method",  $.keyword),
       optional("!"), // final
-      choice(seq($.identifier, ":", $.typespec, ";"),                        // data method
-             seq($.type_tuple, $.identifier, $.type_tuple, $.function_body)) // function method
+      choice(seq($.identifier, ":", $.typespec, ";"),                // data method
+             seq($.type_tuple, $.identifier, $.type_tuple, $.scope)) // function method
     ),
 
     variable_definition: $ => seq(
@@ -83,6 +89,9 @@ module.exports = grammar({
       ),
       ";"
     ),
+
+    // this grammar allows quoted and scoped identifiers everywhere identifiers occur, for simplicity
+    identifier: $ => choice(token(/«[^»\n]+»/), token(/[a-zA-Z_\$][a-zA-Z0-9_]*(::[a-zA-Z_\$][a-zA-Z0-9_]*)*/)),
 
     id_list: $ => seq(
       $.identifier,
@@ -188,22 +197,8 @@ module.exports = grammar({
 	"{", optional(seq($.expression, repeat(seq(",", $.expression)))), "}"
     ),
 
-    expression: $ => choice(
-      $.builtin_expression,
-      $.binary_expression,
-      $.unary_expression,
-      $.initializer,
-      $.tuple_expression,
-      $.card_expression,
-      $.cast_expression,
-      $.index_expression,
-      $.call_expression,
-      $.input_expression,
-      $.output_expression,
-      $.identifier,
-      $.literal
-    ),
-
+    // if we enumerate these exhaustively, then we must keep the list up to date with the compiler.
+    // the advantage is the spell-checking of builtins in the editor.
     builtin: $ => choice(
       "@fwd",
       "@bwd",
@@ -335,33 +330,81 @@ module.exports = grammar({
     input_expression: $ => prec.left(seq($.type_tuple, $.io_literal, $.expression)),
     output_expression: $ => prec.right(seq($.expression, $.io_literal, $.expression)),
 
-    // this grammar allows quoted and scoped identifiers everywhere, for simplicity
-    identifier: $ => choice(token(/«[^»\n]+»/), token(/[a-zA-Z_\$][a-zA-Z0-9_]*(::[a-zA-Z_\$][a-zA-Z0-9_]*)*/)),
+    expression: $ => choice(
+      $.builtin_expression,
+      $.binary_expression,
+      $.unary_expression,
+      $.initializer,
+      $.tuple_expression,
+      $.card_expression,
+      $.cast_expression,
+      $.index_expression,
+      $.call_expression,
+      $.input_expression,
+      $.output_expression,
+      $.identifier,
+      $.literal
+    ),
 
-    executable_statement: $ => seq(choice(
-      $.expression,
-      $.assignment,
-      $.node_instantiation,
-      $.circuit_instantiation,
-      $.fork_statement,
-      $.return_statement
-    ), ";"),
- 
-    assignment: $ => seq($.expression,
-			 choice("=", "<~=", "~>=", "+=", "-=", "*=", "/=", "%=", "|=", "&=", "^=", "~="),
-			 $.expression),
+    bare_assignment: $ => seq($.expression,
+			      choice("=", "<~=", "~>=", "+=", "-=", "*=", "/=", "%=", "|=", "&=", "^=", "~="),
+			      $.expression),
 
-    node_instantiation: $ => seq(alias("node", $.keyword), optional($.intlit), optional($.strlit), $.expression),
-    circuit_instantiation: $ => seq(alias("circuit", $.keyword), optional($.intlit), $.expression),
-    fork_statement: $ => seq(alias(choice("fork", "spawn"), $.keyword), $.expression),
-    return_statement: $ => seq(alias("return", $.keyword), optional($.expression)),
+    bare_increment: $ => choice(seq($.expression, choice("++", "--")),
+				seq(choice("++", "--"), $.expression)),
+
+    bare_statement: $ => choice($.bare_assignment, $.bare_increment, $.expression),
+
+    assignment: $ => seq($.bare_assignment, ";"),
+    increment: $ => seq($.bare_increment, ";"),
+    exprstmt: $ => seq($.expression, ";"),
+
+    simple_statement: $ => choice($.assignment, $.increment, $.exprstmt, ";"),
+
+    for_statement: $ => seq(alias("for", $.keyword), "(", choice($.variable_definition, $.simple_statement), optional($.expression), ";", $.bare_statement, ")", $.scope),
+    while_statement: $ => seq(alias("while", $.keyword), $.expression, $.scope),
+    do_statement: $ => seq(alias("do", $.keyword), $.expression, "while", $.expression, ";"),
+    if_statement: $ => seq(alias("if", $.keyword), $.expression, $.scope, optional(seq("else", $.scope))),
+    switch_statement: $ => seq(alias(choice("switch", "jump"), $.keyword), $.expression, $.scope),
+
+    break_statement: $ => seq(alias("break", $.keyword), optional($.identifier), ";"),
+    continue_statement: $ => seq(alias("continue", $.keyword), optional($.identifier), ";"),
+    return_statement: $ => seq(alias("return", $.keyword), optional($.expression), ";"),
+    assert_statement: $ => seq(alias(choice("assert", "@internal"), $.keyword), $.expression, ";"),
+    case_statement: $ => seq(alias("case", $.keyword), $.expression, ":"),
+    default_statement: $ => seq(alias("default", $.keyword), ":"),
+
+    node_instantiation: $ => seq(alias("node", $.keyword), optional($.intlit), optional($.strlit), $.expression, ";"),
+    circuit_instantiation: $ => seq(alias("circuit", $.keyword), optional($.intlit), $.expression, ";"),
+    fork_statement: $ => seq(alias(choice("fork", "spawn"), $.keyword), $.expression, ";"),
 
     pragma: $ => seq("#", alias(choice("echo", "expect", "meta", "xml"), $.keyword), optional($.expression)),
 
-    // a handful of spots in the Transparency grammar require a simple decimal or string literal
-    intlit: $ => token(/[0-9]+/),
-    strlit: $ => token(/"[^"]+"/),
-      
+    executable_statement: $ => choice(
+
+      $.exprstmt,
+      $.increment,
+      $.assignment,
+
+      $.for_statement,
+      $.while_statement,
+      $.do_statement,
+      $.if_statement,
+      $.switch_statement,
+      $.case_statement,
+      $.default_statement,
+      $.break_statement,
+      $.continue_statement,
+      $.return_statement,
+
+      $.assert_statement,
+
+      $.node_instantiation,
+      $.circuit_instantiation,
+      $.fork_statement
+
+    ),
+
     literal: $ => choice(
       $.number_literal,
       $.string_literal,

@@ -3,16 +3,20 @@
 (number_literal) @constant
 (codepoint_literal) @constant
 (boolean_literal) @constant
-(ioflag_literal) @constant
 
 (string_literal) @string
 (symbol_literal) @string
-(regex_literal) @string
-(rawstring_literal) @string
-(io_literal) @string
 
+(regex_literal) @multiline
+(rawstring_literal) @multiline
+
+(io_literal) @format
+
+(ioflag_literal) @builtin
+(builtin) @builtin
+
+["||" "&&" "==" "!=" "<" ">" "<=" ">=" "|" "^" "~" "&" "<~" "~>" "+" "-" "*" "/" "%" "\\\\"] @punctuation
 ["(" ")" "[" "]" "{" "}" "," ";"] @punctuation
-["||" "&&" "==" "!=" "<" ">" "<=" ">=" "|" "^" "~" "&" "<~" "~>" "+" "-" "*" "/" "%" "\\\\"] @builtin
 
 (keyword) @keyword
 (comment) @comment
