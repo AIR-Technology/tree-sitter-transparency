@@ -17,8 +17,8 @@ module.exports = grammar({
 
   rules: {
 
-    source_file: $ => repeat(choice($.definition, $.pragma)),
-    class_body: $ => seq("{", repeat($.definition), "}"),
+    source_file: $ => repeat(choice($.general_definition, $.pragma)),
+    class_body: $ => seq("{", repeat($.general_definition), "}"),
 
     scope: $ => seq("{", repeat(choice($.definition, $.executable_statement)), "}"),
     body: $ => choice($.scope, ";"),
@@ -26,18 +26,22 @@ module.exports = grammar({
     // a handful of spots in the Transparency grammar require a simple decimal or string literal
     intlit: $ => token(/[0-9]+/),
     strlit: $ => token(/"[^"]+"/),
-      
+
+    general_definition: $ => choice(
+      $.definition,
+      $.class_definition,
+      $.method_definition,
+      $.circuit_definition
+    ),
+
     definition: $ => choice(
-	$.class_definition,
-	//$.circuit_definition,
-	$.method_definition,
 	$.function_definition,
 	$.variable_definition,
 	$.type_definition,
 	$.constant_definition,
 	$.enum_definition
     ),
- 
+
     function_definition: $ => seq(
       alias(choice("function", "entry"), $.keyword),
       $.type_tuple, 

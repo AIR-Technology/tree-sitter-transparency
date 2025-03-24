@@ -256,6 +256,33 @@
     }
   },
   {
+    "type": "circuit_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "keyword",
+          "named": true
+        },
+        {
+          "type": "scope",
+          "named": true
+        },
+        {
+          "type": "type_tuple",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "circuit_instantiation",
     "named": true,
     "fields": {},
@@ -287,7 +314,7 @@
       "required": false,
       "types": [
         {
-          "type": "definition",
+          "type": "general_definition",
           "named": true
         }
       ]
@@ -409,10 +436,6 @@
       "required": true,
       "types": [
         {
-          "type": "class_definition",
-          "named": true
-        },
-        {
           "type": "constant_definition",
           "named": true
         },
@@ -422,10 +445,6 @@
         },
         {
           "type": "function_definition",
-          "named": true
-        },
-        {
-          "type": "method_definition",
           "named": true
         },
         {
@@ -710,6 +729,33 @@
         },
         {
           "type": "type_tuple",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "general_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "circuit_definition",
+          "named": true
+        },
+        {
+          "type": "class_definition",
+          "named": true
+        },
+        {
+          "type": "definition",
+          "named": true
+        },
+        {
+          "type": "method_definition",
           "named": true
         }
       ]
@@ -1219,7 +1265,7 @@
       "required": false,
       "types": [
         {
-          "type": "definition",
+          "type": "general_definition",
           "named": true
         },
         {
