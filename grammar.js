@@ -17,11 +17,11 @@ module.exports = grammar({
 
   rules: {
 
-    source_file: $ => repeat(choice($.definition, $.definition_statement, $.pragma)),
-    class_body: $ => seq("{", repeat(choice($.definition, $.definition_statement)), "}"),
+    source_file: $ => repeat(choice($.definition, $.pragma)),
+    class_body: $ => seq("{", repeat($.definition), "}"),
 
-    // a scope (function body or controlled statement, etc.) may be { ... } or ; (empty)
-    scope: $ => choice(seq("{", repeat(choice($.definition_statement, $.executable_statement)), "}"), ";"),
+    scope: $ => seq("{", repeat(choice($.definition, $.executable_statement)), "}"),
+    body: $ => choice($.scope, ";"),
 
     // a handful of spots in the Transparency grammar require a simple decimal or string literal
     intlit: $ => token(/[0-9]+/),
@@ -29,11 +29,8 @@ module.exports = grammar({
       
     definition: $ => choice(
 	$.class_definition,
-	$.circuit_definition,
-	$.method_definition
-    ),
- 
-    definition_statement: $ => choice(
+	//$.circuit_definition,
+	$.method_definition,
 	$.function_definition,
 	$.variable_definition,
 	$.type_definition,
@@ -46,7 +43,7 @@ module.exports = grammar({
       $.type_tuple, 
       $.identifier, 
       $.type_tuple,
-      $.scope
+      $.body
     ),
 
     circuit_definition: $ => seq(
@@ -76,16 +73,16 @@ module.exports = grammar({
     method_definition: $ => seq(
       alias("method",  $.keyword),
       optional("!"), // final
-      choice(seq($.identifier, ":", $.typespec, ";"),                // data method
-             seq($.type_tuple, $.identifier, $.type_tuple, $.scope)) // function method
+      choice(seq($.identifier, ":", $.typespec, ";"),               // data method
+             seq($.type_tuple, $.identifier, $.type_tuple, $.body)) // function method
     ),
 
     variable_definition: $ => seq(
       alias(choice("var", "ref"), $.keyword),
       $.id_list,
       choice(
-        seq(":", $.typespec, optional(seq("=", $.expression))),
-        seq("=", $.expression)
+        seq(":", $.typespec, optional(seq("=", $.initexpr))),
+        seq("=", $.initexpr)
       ),
       ";"
     ),
@@ -103,7 +100,7 @@ module.exports = grammar({
       $.identifier, 
       optional(seq(":", $.typespec)),
       "=", 
-      $.expression, 
+      $.initexpr,
       ";"
     ),
 
@@ -117,10 +114,8 @@ module.exports = grammar({
 
     enum_definition: $ => seq(
       alias("enum",  $.keyword),
-      $.typespec, 
-      "{", 
-      repeat(seq($.identifier, optional(seq("=", $.expression)), optional(","))),
-      "}"
+      $.typespec,
+      $.initializer
     ),
 
     typeunit: $ => choice(
@@ -137,7 +132,7 @@ module.exports = grammar({
     typespec: $ => choice(
       $.typeunit,
       seq(alias(choice("shared", "const"), $.keyword), $.typespec),
-      seq($.typeunit, $.type_ctor_args),
+      seq($.typeunit, $.bracket_expression),
       seq($.typeunit, "<-", $.type_tuple),
       seq($.typeunit, "+", $.typespec)
     ),
@@ -185,16 +180,16 @@ module.exports = grammar({
 
     method_signature: $ => seq($.identifier, ":", $.typespec),
 
-    type_ctor_args: $ => seq(
-      "[", optional(seq($.expression, repeat(seq(",", $.expression)))), "]"
+    tuple_expression: $ => seq(
+	"(", optional(seq($.initexpr, repeat(seq(",", $.initexpr)))), ")"
     ),
 
-    tuple_expression: $ => seq(
-	"(", optional(seq($.expression, repeat(seq(",", $.expression)))), ")"
+    bracket_expression: $ => seq(
+        "[", optional(seq($.initexpr, repeat(seq(",", $.initexpr)))), "]"
     ),
 
     initializer: $ => seq(
-	"{", optional(seq($.expression, repeat(seq(",", $.expression)))), "}"
+	"{", optional(seq($.initexpr, repeat(seq(",", $.initexpr)))), "}"
     ),
 
     // if we enumerate these exhaustively, then we must keep the list up to date with the compiler.
@@ -322,7 +317,7 @@ module.exports = grammar({
       seq(alias(choice("share", "unshare"), $.keyword), $.expression)
     )),
 
-    card_expression: $ => prec(10, seq($.expression, "|", $.expression, "|")),
+    card_expression: $ => prec.left(seq("|", $.expression, "|")),
     cast_expression: $ => seq($.type_tuple, $.tuple_expression),
     call_expression: $ => seq($.expression, $.tuple_expression),
     index_expression: $ => seq($.expression, "[", seq($.expression, repeat(seq(",", $.expression))), "]"),
@@ -331,11 +326,11 @@ module.exports = grammar({
     output_expression: $ => prec.right(seq($.expression, $.io_literal, $.expression)),
 
     expression: $ => choice(
+      $.tuple_expression,
+      $.bracket_expression,
       $.builtin_expression,
       $.binary_expression,
       $.unary_expression,
-      $.initializer,
-      $.tuple_expression,
       $.card_expression,
       $.cast_expression,
       $.index_expression,
@@ -346,31 +341,42 @@ module.exports = grammar({
       $.literal
     ),
 
-    bare_assignment: $ => seq($.expression,
-			      choice("=", "<~=", "~>=", "+=", "-=", "*=", "/=", "%=", "|=", "&=", "^=", "~="),
-			      $.expression),
+    initexpr: $ => choice($.expression, $.initializer, seq($.bracket_expression, $.initializer)),
+      
+    //
+    // these statement types have no trailing ; because they may occur in last position of for (...)
+    //
+    assertion: $ => seq(alias(choice("assert", "@internal"), $.keyword), $.expression),
 
-    bare_increment: $ => choice(seq($.expression, choice("++", "--")),
-				seq(choice("++", "--"), $.expression)),
+    assignment: $ => seq($.expression,
+			 choice("=", "<~=", "~>=", "+=", "-=", "*=", "/=", "%=", "|=", "&=", "^=", "~="),
+			 $.expression),
 
-    bare_statement: $ => choice($.bare_assignment, $.bare_increment, $.expression),
+    increment: $ => choice(seq($.expression, choice("++", "--")),
+			   seq(choice("++", "--"), $.expression)),
 
-    assignment: $ => seq($.bare_assignment, ";"),
-    increment: $ => seq($.bare_increment, ";"),
-    exprstmt: $ => seq($.expression, ";"),
+    imperative: $ => choice($.assertion, $.assignment, $.increment, $.expression),
 
-    simple_statement: $ => choice($.assignment, $.increment, $.exprstmt, ";"),
+    //
+    // these statement types end in a {} or ;
+    //
 
-    for_statement: $ => seq(alias("for", $.keyword), "(", choice($.variable_definition, $.simple_statement), optional($.expression), ";", $.bare_statement, ")", $.scope),
-    while_statement: $ => seq(alias("while", $.keyword), $.expression, $.scope),
-    do_statement: $ => seq(alias("do", $.keyword), $.expression, "while", $.expression, ";"),
-    if_statement: $ => seq(alias("if", $.keyword), $.expression, $.scope, optional(seq("else", $.scope))),
-    switch_statement: $ => seq(alias(choice("switch", "jump"), $.keyword), $.expression, $.scope),
+    // no control flow transfer, no compound statements, nested scopes etc.
+    simple_statement: $ => seq($.imperative, ";"),
+
+    predicate: $ => seq("(", $.expression, ")"),
+    controlled: $ => choice($.scope, $.simple_statement, ";"),
+
+    return_statement: $ => seq(alias("return", $.keyword), optional($.expression), ";"),
+
+    for_statement: $ => seq(alias("for", $.keyword), "(", choice($.variable_definition, $.simple_statement), optional($.expression), ";", optional($.imperative), ")", $.controlled),
+    while_statement: $ => seq(alias("while", $.keyword), $.predicate, $.controlled),
+    do_statement: $ => seq(alias("do", $.keyword), $.controlled, "while", $.predicate, ";"),
+    if_statement: $ => seq(alias("if", $.keyword), $.predicate, $.controlled, optional(seq("else", $.controlled))),
+    switch_statement: $ => seq(alias(choice("switch", "jump"), $.keyword), $.predicate, $.controlled),
 
     break_statement: $ => seq(alias("break", $.keyword), optional($.identifier), ";"),
     continue_statement: $ => seq(alias("continue", $.keyword), optional($.identifier), ";"),
-    return_statement: $ => seq(alias("return", $.keyword), optional($.expression), ";"),
-    assert_statement: $ => seq(alias(choice("assert", "@internal"), $.keyword), $.expression, ";"),
     case_statement: $ => seq(alias("case", $.keyword), $.expression, ":"),
     default_statement: $ => seq(alias("default", $.keyword), ":"),
 
@@ -382,10 +388,7 @@ module.exports = grammar({
 
     executable_statement: $ => choice(
 
-      $.exprstmt,
-      $.increment,
-      $.assignment,
-
+      $.simple_statement,
       $.for_statement,
       $.while_statement,
       $.do_statement,
@@ -396,12 +399,10 @@ module.exports = grammar({
       $.break_statement,
       $.continue_statement,
       $.return_statement,
-
-      $.assert_statement,
-
       $.node_instantiation,
       $.circuit_instantiation,
-      $.fork_statement
+      $.fork_statement,
+      $.body
 
     ),
 

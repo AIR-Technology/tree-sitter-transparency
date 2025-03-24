@@ -23,7 +23,7 @@
     }
   },
   {
-    "type": "assert_statement",
+    "type": "assertion",
     "named": true,
     "fields": {},
     "children": {
@@ -46,62 +46,9 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "bare_assignment",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "bare_assignment",
-    "named": true,
-    "fields": {},
-    "children": {
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "bare_increment",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "bare_statement",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "bare_assignment",
-          "named": true
-        },
-        {
-          "type": "bare_increment",
-          "named": true
-        },
         {
           "type": "expression",
           "named": true
@@ -159,9 +106,39 @@
     }
   },
   {
+    "type": "body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "scope",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "boolean_literal",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "bracket_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "initexpr",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "break_statement",
@@ -230,7 +207,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
@@ -279,33 +256,6 @@
     }
   },
   {
-    "type": "circuit_definition",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "keyword",
-          "named": true
-        },
-        {
-          "type": "scope",
-          "named": true
-        },
-        {
-          "type": "type_tuple",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "circuit_instantiation",
     "named": true,
     "fields": {},
@@ -338,10 +288,6 @@
       "types": [
         {
           "type": "definition",
-          "named": true
-        },
-        {
-          "type": "definition_statement",
           "named": true
         }
       ]
@@ -383,11 +329,11 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "identifier",
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "initexpr",
           "named": true
         },
         {
@@ -421,6 +367,25 @@
     }
   },
   {
+    "type": "controlled",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "scope",
+          "named": true
+        },
+        {
+          "type": "simple_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "default_statement",
     "named": true,
     "fields": {},
@@ -444,28 +409,9 @@
       "required": true,
       "types": [
         {
-          "type": "circuit_definition",
-          "named": true
-        },
-        {
           "type": "class_definition",
           "named": true
         },
-        {
-          "type": "method_definition",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "definition_statement",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
         {
           "type": "constant_definition",
           "named": true
@@ -476,6 +422,10 @@
         },
         {
           "type": "function_definition",
+          "named": true
+        },
+        {
+          "type": "method_definition",
           "named": true
         },
         {
@@ -498,11 +448,15 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "controlled",
           "named": true
         },
         {
           "type": "keyword",
+          "named": true
+        },
+        {
+          "type": "predicate",
           "named": true
         }
       ]
@@ -532,11 +486,7 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "identifier",
+          "type": "initializer",
           "named": true
         },
         {
@@ -559,11 +509,7 @@
       "required": true,
       "types": [
         {
-          "type": "assert_statement",
-          "named": true
-        },
-        {
-          "type": "assignment",
+          "type": "body",
           "named": true
         },
         {
@@ -591,10 +537,6 @@
           "named": true
         },
         {
-          "type": "exprstmt",
-          "named": true
-        },
-        {
           "type": "for_statement",
           "named": true
         },
@@ -607,15 +549,15 @@
           "named": true
         },
         {
-          "type": "increment",
-          "named": true
-        },
-        {
           "type": "node_instantiation",
           "named": true
         },
         {
           "type": "return_statement",
+          "named": true
+        },
+        {
+          "type": "simple_statement",
           "named": true
         },
         {
@@ -639,6 +581,10 @@
       "types": [
         {
           "type": "binary_expression",
+          "named": true
+        },
+        {
+          "type": "bracket_expression",
           "named": true
         },
         {
@@ -666,10 +612,6 @@
           "named": true
         },
         {
-          "type": "initializer",
-          "named": true
-        },
-        {
           "type": "input_expression",
           "named": true
         },
@@ -693,21 +635,6 @@
     }
   },
   {
-    "type": "exprstmt",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "for_statement",
     "named": true,
     "fields": {},
@@ -716,7 +643,7 @@
       "required": true,
       "types": [
         {
-          "type": "bare_statement",
+          "type": "controlled",
           "named": true
         },
         {
@@ -724,11 +651,11 @@
           "named": true
         },
         {
-          "type": "keyword",
+          "type": "imperative",
           "named": true
         },
         {
-          "type": "scope",
+          "type": "keyword",
           "named": true
         },
         {
@@ -770,15 +697,15 @@
       "required": true,
       "types": [
         {
+          "type": "body",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },
         {
           "type": "keyword",
-          "named": true
-        },
-        {
-          "type": "scope",
           "named": true
         },
         {
@@ -817,7 +744,7 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "controlled",
           "named": true
         },
         {
@@ -825,7 +752,34 @@
           "named": true
         },
         {
-          "type": "scope",
+          "type": "predicate",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "imperative",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "assertion",
+          "named": true
+        },
+        {
+          "type": "assignment",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "increment",
           "named": true
         }
       ]
@@ -840,7 +794,7 @@
       "required": true,
       "types": [
         {
-          "type": "bare_increment",
+          "type": "expression",
           "named": true
         }
       ]
@@ -862,6 +816,29 @@
     }
   },
   {
+    "type": "initexpr",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bracket_expression",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "initializer",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "initializer",
     "named": true,
     "fields": {},
@@ -870,7 +847,7 @@
       "required": false,
       "types": [
         {
-          "type": "expression",
+          "type": "initexpr",
           "named": true
         }
       ]
@@ -980,15 +957,15 @@
       "required": true,
       "types": [
         {
+          "type": "body",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },
         {
           "type": "keyword",
-          "named": true
-        },
-        {
-          "type": "scope",
           "named": true
         },
         {
@@ -1106,6 +1083,21 @@
     }
   },
   {
+    "type": "predicate",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "rangle",
     "named": true,
     "fields": {}
@@ -1172,7 +1164,7 @@
       "required": false,
       "types": [
         {
-          "type": "definition_statement",
+          "type": "definition",
           "named": true
         },
         {
@@ -1203,18 +1195,10 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": false,
+      "required": true,
       "types": [
         {
-          "type": "assignment",
-          "named": true
-        },
-        {
-          "type": "exprstmt",
-          "named": true
-        },
-        {
-          "type": "increment",
+          "type": "imperative",
           "named": true
         }
       ]
@@ -1239,10 +1223,6 @@
           "named": true
         },
         {
-          "type": "definition_statement",
-          "named": true
-        },
-        {
           "type": "pragma",
           "named": true
         }
@@ -1258,7 +1238,7 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "controlled",
           "named": true
         },
         {
@@ -1266,7 +1246,7 @@
           "named": true
         },
         {
-          "type": "scope",
+          "type": "predicate",
           "named": true
         }
       ]
@@ -1319,22 +1299,7 @@
       "required": false,
       "types": [
         {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "type_ctor_args",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "expression",
+          "type": "initexpr",
           "named": true
         }
       ]
@@ -1395,11 +1360,11 @@
       "required": true,
       "types": [
         {
-          "type": "keyword",
+          "type": "bracket_expression",
           "named": true
         },
         {
-          "type": "type_ctor_args",
+          "type": "keyword",
           "named": true
         },
         {
@@ -1484,11 +1449,11 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "id_list",
           "named": true
         },
         {
-          "type": "id_list",
+          "type": "initexpr",
           "named": true
         },
         {
@@ -1511,7 +1476,7 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "controlled",
           "named": true
         },
         {
@@ -1519,7 +1484,7 @@
           "named": true
         },
         {
-          "type": "scope",
+          "type": "predicate",
           "named": true
         }
       ]
