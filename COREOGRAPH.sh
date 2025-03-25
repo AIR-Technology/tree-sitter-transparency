@@ -11,5 +11,5 @@ tree-sitter build
 ## ultimately we mult populate the tests directory here.
 ## tst/cmp and tst/run are the obvious sources of test inputs.
 
-#tree-sitter highlight ~/GITHUB/TransparencyCompiler/ast/ast.t
 tree-sitter highlight ~/bar.t
+tree-sitter highlight ~/foo.t

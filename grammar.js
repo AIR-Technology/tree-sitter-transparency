@@ -17,24 +17,18 @@ module.exports = grammar({
 
   rules: {
 
-    source_file: $ => repeat(choice($.general_definition, $.pragma)),
-    class_body: $ => seq("{", repeat($.general_definition), "}"),
+    source_file: $ => repeat(choice($.class_scope_definition, $.pragma)),
+    class_body: $ => seq("{", repeat($.class_scope_definition), "}"),
 
-    scope: $ => seq("{", repeat(choice($.definition, $.executable_statement)), "}"),
+    scope: $ => prec(20, seq("{", repeat(choice($.function_scope_definition, $.executable_statement)), "}")),
     body: $ => choice($.scope, ";"),
 
     // a handful of spots in the Transparency grammar require a simple decimal or string literal
     intlit: $ => token(/[0-9]+/),
     strlit: $ => token(/"[^"]+"/),
 
-    general_definition: $ => choice(
-      $.definition,
-      $.class_definition,
-      $.method_definition,
-      $.circuit_definition
-    ),
-
-    definition: $ => choice(
+    // these definitions are OK in function scope
+    function_scope_definition: $ => choice(
 	$.function_definition,
 	$.variable_definition,
 	$.type_definition,
@@ -42,18 +36,32 @@ module.exports = grammar({
 	$.enum_definition
     ),
 
+    // these definitions are OK in class scope
+    class_scope_definition: $ => choice(
+      $.function_scope_definition,
+      $.class_definition,
+      $.method_definition,
+      $.ctor_definition,
+      $.dtor_definition,
+      $.fire_definition,
+      $.circuit_definition,
+      $.implements_declaration
+    ),
+
+    implements_declaration: $ => seq(alias("implements", $.keyword), $.typespec, ";"),
+
     function_definition: $ => seq(
       alias(choice("function", "entry"), $.keyword),
-      $.type_tuple, 
+      $.typetuple, 
       $.identifier, 
-      $.type_tuple,
+      $.typetuple,
       $.body
     ),
 
     circuit_definition: $ => seq(
       alias("circuit", $.keyword),
       $.identifier,
-      $.type_tuple,
+      $.typetuple,
       $.scope
     ),
 
@@ -74,22 +82,42 @@ module.exports = grammar({
       $.identifier
     ),
 
+    ctor_definition: $ => seq(
+      alias("ctor", $.keyword),
+      $.typetuple,
+      optional($.ctorinits),
+      $.body
+    ),
+
+    dtor_definition: $ => seq(
+      alias("dtor", $.keyword),
+      $.body
+    ),
+
+    fire_definition: $ => seq(
+      alias("fire", $.keyword),
+      $.body
+    ),
+
     method_definition: $ => seq(
       alias("method",  $.keyword),
       optional("!"), // final
       choice(seq($.identifier, ":", $.typespec, ";"),               // data method
-             seq($.type_tuple, $.identifier, $.type_tuple, $.body)) // function method
+             seq($.typetuple, $.identifier, $.typetuple, $.body)) // function method
     ),
 
     variable_definition: $ => seq(
       alias(choice("var", "ref"), $.keyword),
       $.id_list,
       choice(
-        seq(":", $.typespec, optional(seq("=", $.initexpr))),
-        seq("=", $.initexpr)
+        seq(":", $.typespec, optional(seq("=", $.expression))),
+        seq("=", $.expression)
       ),
       ";"
     ),
+
+    ctorinit: $ => seq($.identifier, $.tuple_expression),
+    ctorinits: $ => seq(optional(":"), seq($.ctorinit, repeat(seq(",", $.ctorinit)))),
 
     // this grammar allows quoted and scoped identifiers everywhere identifiers occur, for simplicity
     identifier: $ => choice(token(/«[^»\n]+»/), token(/[a-zA-Z_\$][a-zA-Z0-9_]*(::[a-zA-Z_\$][a-zA-Z0-9_]*)*/)),
@@ -104,7 +132,7 @@ module.exports = grammar({
       $.identifier, 
       optional(seq(":", $.typespec)),
       "=", 
-      $.initexpr,
+      $.expression,
       ";"
     ),
 
@@ -137,7 +165,7 @@ module.exports = grammar({
       $.typeunit,
       seq(alias(choice("shared", "const"), $.keyword), $.typespec),
       seq($.typeunit, $.bracket_expression),
-      seq($.typeunit, "<-", $.type_tuple),
+      seq($.typeunit, "<-", $.typetuple),
       seq($.typeunit, "+", $.typespec)
     ),
 
@@ -150,15 +178,17 @@ module.exports = grammar({
 
     angledtypespec: $ => seq($.langle, $.typespec, $.rangle),
 
-    type_tuple: $ => seq($.langle, optional(seq($.namedtypespec, repeat(seq(",", $.namedtypespec)))), $.rangle),
+    typetuple: $ => seq($.langle, optional(seq($.namedtypespec, repeat(seq(",", $.namedtypespec)))), $.rangle),
 
-    rank_tuple: $ => seq(optional($.rank), $.type_tuple),
+    rank_tuple: $ => seq(optional($.rank), $.typetuple),
 
     simple_type: $ => choice(
-      "string", "symbol", "regex", "match", "blob",
-      "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64",
-      "float32", "float64", "codepoint", "bool",
+      "int8", "int16", "int32", "int64",
+      "uint8", "uint16", "uint32", "uint64",
+      "float32", "float64",
+      "codepoint", "bool",
       "double", "single", "int", "uint", "char",
+      "string", "symbol", "regex", "match", "blob",
       "device", "buffer", "stream",
       "bitset", "idxset"
     ),
@@ -185,15 +215,15 @@ module.exports = grammar({
     method_signature: $ => seq($.identifier, ":", $.typespec),
 
     tuple_expression: $ => seq(
-	"(", optional(seq($.initexpr, repeat(seq(",", $.initexpr)))), ")"
+	"(", optional(seq($.expression, repeat(seq(",", $.expression)))), ")"
     ),
 
     bracket_expression: $ => seq(
-        "[", optional(seq($.initexpr, repeat(seq(",", $.initexpr)))), "]"
+        "[", optional(seq($.expression, repeat(seq(",", $.expression)))), "]"
     ),
 
     initializer: $ => seq(
-	"{", optional(seq($.initexpr, repeat(seq(",", $.initexpr)))), "}"
+	"{", optional(seq($.expression, repeat(seq(",", $.expression)))), "}"
     ),
 
     // if we enumerate these exhaustively, then we must keep the list up to date with the compiler.
@@ -259,9 +289,9 @@ module.exports = grammar({
       "@mulsub",
       "@submul",
       "@sort",
-      "@getuser",
-      "@setuser",
-      "@clruser",
+      token(/@getuser[0-9abAB]/),
+      token(/@setuser[0-9abAB]/),
+      token(/@clruser[0-9abAB]/),
       "@schedule",
       "@get",
       "@put",
@@ -306,46 +336,62 @@ module.exports = grammar({
 
     builtin_expression: $ => prec(10, seq($.builtin, $.expression)),
 
-    binary_expression: $ => prec.left(choice(
-      seq($.expression, choice(
-        "||", "&&", "==", "!=", "<", ">", "<=", ">=", 
-        "|", "^", "~", "&", "<~", "~>", "+", "-", "*", "/", "%", "\\\\"
-      ), $.expression)
-    )),
+    ternary_expression: $ => prec.left(
+      seq($.expression, "?", $.expression, ":", $.expression)
+    ),
 
-    unary_expression: $ => prec.right(choice(
+    binary_expression: $ => choice(
+      prec.left(1, seq($.expression, choice("==", "!=", "<", ">", "<=", ">="), $.expression)),
+      prec.left(2, seq($.expression, choice("||", "&&", ), $.expression)),
+      prec.left(3, seq($.expression, "\\\\", $.expression)),
+      prec.left(4, seq($.expression, choice("|", "^", "~", "&"), $.expression)),
+      prec.left(5, seq($.expression, choice("<~", "~>"), $.expression)),
+      prec.left(6, seq($.expression, choice("+", "-"), $.expression)),
+      prec.left(7, seq($.expression, choice("*", "/", "%"), $.expression)),
+    ),
+
+    unary_expression: $ => prec.right(10,
       seq(choice("-", "+", "!", "~", "&"), $.expression)
-    )),
+    ),
 
-    qual_expression: $ => prec.right(choice(
+    qual_expression: $ => prec.right(
       seq(alias(choice("share", "unshare"), $.keyword), $.expression)
-    )),
+    ),
 
     card_expression: $ => prec.left(seq("|", $.expression, "|")),
-    cast_expression: $ => seq($.type_tuple, $.tuple_expression),
-    call_expression: $ => seq($.expression, $.tuple_expression),
+    cast_expression: $ => seq($.typetuple, $.tuple_expression),
+    call_expression: $ => seq(choice(seq($.typetuple, choice($.identifier, $.string_literal)), $.expression), $.tuple_expression),
     index_expression: $ => seq($.expression, "[", seq($.expression, repeat(seq(",", $.expression))), "]"),
+    select_expression: $ => seq($.expression, ".", $.identifier),
+    method_expression: $ => prec.left(12, seq($.expression, "->", optional($.typetuple), $.identifier, optional($.typetuple))),
 
-    input_expression: $ => prec.left(seq($.type_tuple, $.io_literal, $.expression)),
+    input_expression: $ => prec.left(seq($.typetuple, $.io_literal, $.expression)),
     output_expression: $ => prec.right(seq($.expression, $.io_literal, $.expression)),
 
-    expression: $ => choice(
+      expression: $ => choice(
+      $.initializer,
+      prec.left(seq($.bracket_expression, optional($.initializer))),
       $.tuple_expression,
-      $.bracket_expression,
       $.builtin_expression,
+      $.ternary_expression,
       $.binary_expression,
       $.unary_expression,
+      $.qual_expression,
       $.card_expression,
       $.cast_expression,
       $.index_expression,
+      $.select_expression,
+      $.method_expression,
       $.call_expression,
       $.input_expression,
       $.output_expression,
       $.identifier,
-      $.literal
+      $.literal,
+      $.closure
     ),
 
-    initexpr: $ => choice($.expression, $.initializer, seq($.bracket_expression, $.initializer)),
+    //initexpr: $ => choice($.expression, $.initializer, seq($.bracket_expression, $.initializer)),
+    //initexpr: $ => choice($.expression, $.initializer),
       
     //
     // these statement types have no trailing ; because they may occur in last position of for (...)
@@ -367,13 +413,16 @@ module.exports = grammar({
 
     // no control flow transfer, no compound statements, nested scopes etc.
     simple_statement: $ => seq($.imperative, ";"),
+    transfer_statement: $ => choice($.return_statement, $.break_statement, $.continue_statement),
 
     predicate: $ => seq("(", $.expression, ")"),
-    controlled: $ => choice($.scope, $.simple_statement, ";"),
+    controlled: $ => choice($.scope, $.simple_statement, $.transfer_statement, ";"),
 
+    label_statement: $ => seq($.identifier, ":"),
     return_statement: $ => seq(alias("return", $.keyword), optional($.expression), ";"),
 
     for_statement: $ => seq(alias("for", $.keyword), "(", choice($.variable_definition, $.simple_statement), optional($.expression), ";", optional($.imperative), ")", $.controlled),
+    for_in_statement: $ => seq(alias("for", $.keyword), optional(alias(choice("var","ref"),$.keyword)), $.identifier, optional(alias("in", $.keyword)), $.expression, choice(seq("do", $.controlled), $.body)),
     while_statement: $ => seq(alias("while", $.keyword), $.predicate, $.controlled),
     do_statement: $ => seq(alias("do", $.keyword), $.controlled, "while", $.predicate, ";"),
     if_statement: $ => seq(alias("if", $.keyword), $.predicate, $.controlled, optional(seq("else", $.controlled))),
@@ -394,6 +443,7 @@ module.exports = grammar({
 
       $.simple_statement,
       $.for_statement,
+      $.for_in_statement,
       $.while_statement,
       $.do_statement,
       $.if_statement,
@@ -402,6 +452,7 @@ module.exports = grammar({
       $.default_statement,
       $.break_statement,
       $.continue_statement,
+      $.label_statement,
       $.return_statement,
       $.node_instantiation,
       $.circuit_instantiation,
@@ -430,6 +481,7 @@ module.exports = grammar({
     regex_literal: $ => token(seq("‹", /[^‹›]*/s, "›")),
     rawstring_literal: $ => token(seq("“", /[^“”]*/s, "”")),
     io_literal: $ => token(/<:[^:]*:/),
+
     ioflag_literal: $ => choice(
       "@stdin",
       "@stdout",
@@ -457,7 +509,10 @@ module.exports = grammar({
       "@utf8",
       "@utf16",
       "@utf32"
-      ),
+    ),
+
+    closure: $ => choice(seq($.typetuple, "<-", $.typetuple, $.scope),
+			 seq($.typetuple, $.identifier, $.typetuple)),
 
     comment: $ => token(choice(
       seq("//", /.*/),
