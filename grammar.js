@@ -31,6 +31,7 @@ module.exports = grammar({
     function_scope_definition: $ => choice(
 	$.function_definition,
 	$.variable_definition,
+	$.comprehension_definition,
 	$.type_definition,
 	$.constant_definition,
 	$.enum_definition
@@ -45,7 +46,8 @@ module.exports = grammar({
       $.dtor_definition,
       $.fire_definition,
       $.circuit_definition,
-      $.implements_declaration
+      $.implements_declaration,
+      ";"	
     ),
 
     implements_declaration: $ => seq(alias("implements", $.keyword), $.typespec, ";"),
@@ -109,6 +111,16 @@ module.exports = grammar({
     variable_definition: $ => seq(
       alias(choice("var", "ref"), $.keyword),
       $.id_list,
+      choice(
+        seq(":", $.typespec, optional(seq("=", $.expression))),
+        seq("=", $.expression)
+      ),
+      ";"
+    ),
+
+    comprehension_definition: $ => seq(
+      alias(choice("var", "ref"), $.keyword),
+      seq("(", $.id_list, ")"),
       choice(
         seq(":", $.typespec, optional(seq("=", $.expression))),
         seq("=", $.expression)
@@ -358,6 +370,8 @@ module.exports = grammar({
       seq(alias(choice("share", "unshare"), $.keyword), $.expression)
     ),
 
+    choose_expression: $ => seq($.expression, "??", "{" , seq(choice(seq($.literal, ":", $.expression), $.expression), repeat(seq(",", choice(seq($.literal, ":", $.expression), $.expression)))), "}"),
+
     card_expression: $ => prec.left(seq("|", $.expression, "|")),
     cast_expression: $ => seq($.typetuple, $.tuple_expression),
     call_expression: $ => seq(choice(seq($.typetuple, choice($.identifier, $.string_literal)), $.expression), $.tuple_expression),
@@ -368,7 +382,7 @@ module.exports = grammar({
     input_expression: $ => prec.left(seq($.typetuple, $.io_literal, $.expression)),
     output_expression: $ => prec.right(seq($.expression, $.io_literal, $.expression)),
 
-      expression: $ => choice(
+    expression: $ => choice(
       $.initializer,
       prec.left(seq($.bracket_expression, optional($.initializer))),
       $.tuple_expression,
@@ -385,6 +399,7 @@ module.exports = grammar({
       $.call_expression,
       $.input_expression,
       $.output_expression,
+      $.choose_expression,
       $.identifier,
       $.literal,
       $.closure
@@ -416,7 +431,8 @@ module.exports = grammar({
     transfer_statement: $ => choice($.return_statement, $.break_statement, $.continue_statement),
 
     predicate: $ => seq("(", $.expression, ")"),
-    controlled: $ => choice($.scope, $.simple_statement, $.transfer_statement, ";"),
+    controlled: $ => choice($.scope, $.simple_statement, $.transfer_statement, $.for_statement, $.for_in_statement, $.do_statement, $.while_statement, $.switch_statement, ";"),
+    else_controlled: $ => choice($.controlled, $.if_statement),
 
     label_statement: $ => seq($.identifier, ":"),
     return_statement: $ => seq(alias("return", $.keyword), optional($.expression), ";"),
@@ -425,7 +441,7 @@ module.exports = grammar({
     for_in_statement: $ => seq(alias("for", $.keyword), optional(alias(choice("var","ref"),$.keyword)), $.identifier, optional(alias("in", $.keyword)), $.expression, choice(seq("do", $.controlled), $.body)),
     while_statement: $ => seq(alias("while", $.keyword), $.predicate, $.controlled),
     do_statement: $ => seq(alias("do", $.keyword), $.controlled, "while", $.predicate, ";"),
-    if_statement: $ => seq(alias("if", $.keyword), $.predicate, $.controlled, optional(seq("else", $.controlled))),
+    if_statement: $ => seq(alias("if", $.keyword), $.predicate, $.controlled, optional(seq("else", $.else_controlled))),
     switch_statement: $ => seq(alias(choice("switch", "jump"), $.keyword), $.predicate, $.controlled),
 
     break_statement: $ => seq(alias("break", $.keyword), optional($.identifier), ";"),

@@ -268,6 +268,25 @@
     }
   },
   {
+    "type": "choose_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "circuit_definition",
     "named": true,
     "fields": {},
@@ -365,7 +384,7 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "circuit_definition",
@@ -426,6 +445,33 @@
     }
   },
   {
+    "type": "comprehension_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "id_list",
+          "named": true
+        },
+        {
+          "type": "keyword",
+          "named": true
+        },
+        {
+          "type": "typespec",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "constant_definition",
     "named": true,
     "fields": {},
@@ -480,6 +526,18 @@
       "required": false,
       "types": [
         {
+          "type": "do_statement",
+          "named": true
+        },
+        {
+          "type": "for_in_statement",
+          "named": true
+        },
+        {
+          "type": "for_statement",
+          "named": true
+        },
+        {
           "type": "scope",
           "named": true
         },
@@ -488,7 +546,15 @@
           "named": true
         },
         {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
           "type": "transfer_statement",
+          "named": true
+        },
+        {
+          "type": "while_statement",
           "named": true
         }
       ]
@@ -628,6 +694,25 @@
     }
   },
   {
+    "type": "else_controlled",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "controlled",
+          "named": true
+        },
+        {
+          "type": "if_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "enum_definition",
     "named": true,
     "fields": {},
@@ -759,6 +844,10 @@
         },
         {
           "type": "cast_expression",
+          "named": true
+        },
+        {
+          "type": "choose_expression",
           "named": true
         },
         {
@@ -956,6 +1045,10 @@
       "required": true,
       "types": [
         {
+          "type": "comprehension_definition",
+          "named": true
+        },
+        {
           "type": "constant_definition",
           "named": true
         },
@@ -1008,6 +1101,10 @@
       "types": [
         {
           "type": "controlled",
+          "named": true
+        },
+        {
+          "type": "else_controlled",
           "named": true
         },
         {
@@ -2001,6 +2098,10 @@
   },
   {
     "type": "?",
+    "named": false
+  },
+  {
+    "type": "??",
     "named": false
   },
   {
