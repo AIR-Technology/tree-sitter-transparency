@@ -85,19 +85,19 @@ module.exports = grammar({
     ),
 
     ctor_definition: $ => seq(
-      alias("ctor", $.keyword),
+      alias(token(/([a-zA-Z0-9_\$]+::)*ctor/), $.keyword),
       $.typetuple,
       optional($.ctorinits),
       $.body
     ),
 
     dtor_definition: $ => seq(
-      alias("dtor", $.keyword),
+      alias(token(/([a-zA-Z0-9_\$]+::)*dtor/), $.keyword),
       $.body
     ),
 
     fire_definition: $ => seq(
-      alias("fire", $.keyword),
+      alias(token(/([a-zA-Z0-9_\$]+::)*fire/), $.keyword),
       $.body
     ),
 
@@ -132,7 +132,7 @@ module.exports = grammar({
     ctorinits: $ => seq(optional(":"), seq($.ctorinit, repeat(seq(",", $.ctorinit)))),
 
     // this grammar allows quoted and scoped identifiers everywhere identifiers occur, for simplicity
-    identifier: $ => choice(token(/«[^»\n]+»/), token(/[a-zA-Z_\$][a-zA-Z0-9_]*(::[a-zA-Z_\$][a-zA-Z0-9_]*)*/)),
+    identifier: $ => choice(token(/«[^»\n]+»/), token(/([a-zA-Z0-9_\$]+::)*[a-zA-Z0-9_\$]+/)),
 
     id_list: $ => seq(
       $.identifier,
@@ -159,7 +159,9 @@ module.exports = grammar({
     enum_definition: $ => seq(
       alias("enum",  $.keyword),
       $.typespec,
-      $.initializer
+      "{",
+      $.id_list,
+      "}"
     ),
 
     typeunit: $ => choice(
@@ -188,8 +190,6 @@ module.exports = grammar({
     langle: $ => "<",
     rangle: $ => ">",
 
-    angledtypespec: $ => seq($.langle, $.typespec, $.rangle),
-
     typetuple: $ => seq($.langle, optional(seq($.namedtypespec, repeat(seq(",", $.namedtypespec)))), $.rangle),
 
     rank_tuple: $ => seq(optional($.rank), $.typetuple),
@@ -207,17 +207,17 @@ module.exports = grammar({
 
     element_type: $ => seq(
       choice("vector", "deque", "pqueue", "wire", "set", "ordset", "list", "table", "idxmap", "in", "out"),
-      $.angledtypespec
+      $.typetuple
     ),
 
-    keyval_type: $ => seq(choice("ordmap", "map"), $.angledtypespec, "to", $.angledtypespec),
+    keyval_type: $ => seq(choice("ordmap", "map"), $.typetuple, "to", $.typetuple),
 
-    tensor_type: $ => seq("tensor", $.rank, $.angledtypespec),
+    tensor_type: $ => seq("tensor", $.rank, $.typetuple),
 
     trigger_type: $ => seq(
       alias("trigger", $.keyword),
       choice("in", "out"),
-      $.angledtypespec
+      $.typetuple
     ),
 
     signature_type: $ => seq(
@@ -234,9 +234,9 @@ module.exports = grammar({
         "[", optional(seq($.expression, repeat(seq(",", $.expression)))), "]"
     ),
 
-    initializer: $ => seq(
-	"{", optional(seq($.expression, repeat(seq(",", $.expression)))), "}"
-    ),
+    initializer: $ => prec.left(11, seq(
+         optional($.bracket_expression), "{", optional(seq($.expression, repeat(seq(",", $.expression)))), "}"
+    )),
 
     // if we enumerate these exhaustively, then we must keep the list up to date with the compiler.
     // the advantage is the spell-checking of builtins in the editor.
@@ -380,11 +380,11 @@ module.exports = grammar({
     method_expression: $ => prec.left(12, seq($.expression, "->", optional($.typetuple), $.identifier, optional($.typetuple))),
 
     input_expression: $ => prec.left(seq($.typetuple, $.io_literal, $.expression)),
-    output_expression: $ => prec.right(seq($.expression, $.io_literal, $.expression)),
+      output_expression: $ => prec.right(seq($.expression, $.io_literal, $.expression)),
 
-    expression: $ => choice(
+      expression: $ => choice(
       $.initializer,
-      prec.left(seq($.bracket_expression, optional($.initializer))),
+      $.bracket_expression,
       $.tuple_expression,
       $.builtin_expression,
       $.ternary_expression,
@@ -405,9 +405,6 @@ module.exports = grammar({
       $.closure
     ),
 
-    //initexpr: $ => choice($.expression, $.initializer, seq($.bracket_expression, $.initializer)),
-    //initexpr: $ => choice($.expression, $.initializer),
-      
     //
     // these statement types have no trailing ; because they may occur in last position of for (...)
     //
@@ -430,11 +427,12 @@ module.exports = grammar({
     simple_statement: $ => seq($.imperative, ";"),
     transfer_statement: $ => choice($.return_statement, $.break_statement, $.continue_statement),
 
+    // the Transparency grammar allows an unparenthesized expression here
     predicate: $ => seq("(", $.expression, ")"),
+      
     controlled: $ => choice($.scope, $.simple_statement, $.transfer_statement, $.for_statement, $.for_in_statement, $.do_statement, $.while_statement, $.switch_statement, ";"),
     else_controlled: $ => choice($.controlled, $.if_statement),
 
-    label_statement: $ => seq($.identifier, ":"),
     return_statement: $ => seq(alias("return", $.keyword), optional($.expression), ";"),
 
     for_statement: $ => seq(alias("for", $.keyword), "(", choice($.variable_definition, $.simple_statement), optional($.expression), ";", optional($.imperative), ")", $.controlled),
@@ -446,8 +444,13 @@ module.exports = grammar({
 
     break_statement: $ => seq(alias("break", $.keyword), optional($.identifier), ";"),
     continue_statement: $ => seq(alias("continue", $.keyword), optional($.identifier), ";"),
-    case_statement: $ => seq(alias("case", $.keyword), $.expression, ":"),
-    default_statement: $ => seq(alias("default", $.keyword), ":"),
+
+    // this is a lot more lenient, in respect to case/default, than the actual grammar,
+    // but I think it makes it easier to get the indentation right around these statement types.
+    labeled_statement: $ => seq(choice($.identifier, 
+				       seq(alias("case", $.keyword), $.expression),
+				       alias("default", $.keyword)),
+				":"),
 
     node_instantiation: $ => seq(alias("node", $.keyword), optional($.intlit), optional($.strlit), $.expression, ";"),
     circuit_instantiation: $ => seq(alias("circuit", $.keyword), optional($.intlit), $.expression, ";"),
@@ -464,11 +467,9 @@ module.exports = grammar({
       $.do_statement,
       $.if_statement,
       $.switch_statement,
-      $.case_statement,
-      $.default_statement,
       $.break_statement,
       $.continue_statement,
-      $.label_statement,
+      $.labeled_statement,
       $.return_statement,
       $.node_instantiation,
       $.circuit_instantiation,
