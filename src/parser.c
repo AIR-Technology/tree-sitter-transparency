@@ -625,7 +625,7 @@ static const char * const ts_symbol_names[] = {
   [anon_sym_do] = "do",
   [anon_sym_while] = "while",
   [anon_sym_if] = "keyword",
-  [anon_sym_else] = "else",
+  [anon_sym_else] = "keyword",
   [anon_sym_switch] = "keyword",
   [anon_sym_jump] = "keyword",
   [anon_sym_break] = "keyword",
@@ -999,7 +999,7 @@ static const TSSymbol ts_symbol_map[] = {
   [anon_sym_do] = anon_sym_do,
   [anon_sym_while] = anon_sym_while,
   [anon_sym_if] = anon_sym_implements,
-  [anon_sym_else] = anon_sym_else,
+  [anon_sym_else] = anon_sym_implements,
   [anon_sym_switch] = anon_sym_implements,
   [anon_sym_jump] = anon_sym_implements,
   [anon_sym_break] = anon_sym_implements,
@@ -2047,7 +2047,7 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
   },
   [anon_sym_else] = {
     .visible = true,
-    .named = false,
+    .named = true,
   },
   [anon_sym_switch] = {
     .visible = true,

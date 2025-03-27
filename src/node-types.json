@@ -2613,10 +2613,6 @@
     "named": false
   },
   {
-    "type": "else",
-    "named": false
-  },
-  {
     "type": "false",
     "named": false
   },

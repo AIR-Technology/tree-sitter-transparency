@@ -439,7 +439,7 @@ module.exports = grammar({
     for_in_statement: $ => seq(alias("for", $.keyword), optional(alias(choice("var","ref"),$.keyword)), $.identifier, optional(alias("in", $.keyword)), $.expression, choice(seq("do", $.controlled), $.body)),
     while_statement: $ => seq(alias("while", $.keyword), $.predicate, $.controlled),
     do_statement: $ => seq(alias("do", $.keyword), $.controlled, "while", $.predicate, ";"),
-    if_statement: $ => seq(alias("if", $.keyword), $.predicate, $.controlled, optional(seq("else", $.else_controlled))),
+    if_statement: $ => seq(alias("if", $.keyword), $.predicate, $.controlled, optional(seq(alias("else", $.keyword), $.else_controlled))),
     switch_statement: $ => seq(alias(choice("switch", "jump"), $.keyword), $.predicate, $.controlled),
 
     break_statement: $ => seq(alias("break", $.keyword), optional($.identifier), ";"),
