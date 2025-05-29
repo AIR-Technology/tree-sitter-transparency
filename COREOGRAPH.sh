@@ -7,9 +7,4 @@
 tree-sitter generate
 tree-sitter build
 
-## call tests you want to have run after rebuilding here.
-## ultimately we mult populate the tests directory here.
-## tst/cmp and tst/run are the obvious sources of test inputs.
-
-tree-sitter highlight ~/bar.t
-tree-sitter highlight ~/foo.t
+cp -f transparency.so ~/.emacs.d/tree-sitter/libtree-sitter-transparency.so

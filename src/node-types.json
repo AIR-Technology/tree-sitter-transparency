@@ -137,11 +137,6 @@
     }
   },
   {
-    "type": "builtin",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "builtin_expression",
     "named": true,
     "fields": {},
@@ -2056,55 +2051,11 @@
     "named": false
   },
   {
-    "type": "@accept",
-    "named": false
-  },
-  {
-    "type": "@adv",
-    "named": false
-  },
-  {
-    "type": "@alignment",
-    "named": false
-  },
-  {
-    "type": "@append",
-    "named": false
-  },
-  {
-    "type": "@augment",
-    "named": false
-  },
-  {
     "type": "@be",
     "named": false
   },
   {
     "type": "@bin",
-    "named": false
-  },
-  {
-    "type": "@built",
-    "named": false
-  },
-  {
-    "type": "@bwd",
-    "named": false
-  },
-  {
-    "type": "@byte",
-    "named": false
-  },
-  {
-    "type": "@byteswap",
-    "named": false
-  },
-  {
-    "type": "@cap",
-    "named": false
-  },
-  {
-    "type": "@cat",
     "named": false
   },
   {
@@ -2116,39 +2067,7 @@
     "named": false
   },
   {
-    "type": "@ctcbuilt",
-    "named": false
-  },
-  {
-    "type": "@ctcetc",
-    "named": false
-  },
-  {
-    "type": "@defined",
-    "named": false
-  },
-  {
-    "type": "@del",
-    "named": false
-  },
-  {
-    "type": "@depth",
-    "named": false
-  },
-  {
-    "type": "@elt",
-    "named": false
-  },
-  {
-    "type": "@empty",
-    "named": false
-  },
-  {
     "type": "@file",
-    "named": false
-  },
-  {
-    "type": "@flush",
     "named": false
   },
   {
@@ -2156,55 +2075,7 @@
     "named": false
   },
   {
-    "type": "@fromfloat",
-    "named": false
-  },
-  {
-    "type": "@full",
-    "named": false
-  },
-  {
-    "type": "@fwd",
-    "named": false
-  },
-  {
-    "type": "@get",
-    "named": false
-  },
-  {
-    "type": "@geterrors",
-    "named": false
-  },
-  {
-    "type": "@head",
-    "named": false
-  },
-  {
-    "type": "@id",
-    "named": false
-  },
-  {
     "type": "@in",
-    "named": false
-  },
-  {
-    "type": "@index",
-    "named": false
-  },
-  {
-    "type": "@iosize",
-    "named": false
-  },
-  {
-    "type": "@isrecording",
-    "named": false
-  },
-  {
-    "type": "@join",
-    "named": false
-  },
-  {
-    "type": "@key",
     "named": false
   },
   {
@@ -2212,51 +2083,11 @@
     "named": false
   },
   {
-    "type": "@ls1",
-    "named": false
-  },
-  {
-    "type": "@max",
-    "named": false
-  },
-  {
-    "type": "@min",
-    "named": false
-  },
-  {
     "type": "@mmp",
     "named": false
   },
   {
-    "type": "@ms1",
-    "named": false
-  },
-  {
-    "type": "@muladd",
-    "named": false
-  },
-  {
-    "type": "@mulsub",
-    "named": false
-  },
-  {
-    "type": "@name",
-    "named": false
-  },
-  {
     "type": "@new",
-    "named": false
-  },
-  {
-    "type": "@nth",
-    "named": false
-  },
-  {
-    "type": "@ord",
-    "named": false
-  },
-  {
-    "type": "@ordinal",
     "named": false
   },
   {
@@ -2268,55 +2099,7 @@
     "named": false
   },
   {
-    "type": "@pop",
-    "named": false
-  },
-  {
-    "type": "@pophead",
-    "named": false
-  },
-  {
-    "type": "@poptail",
-    "named": false
-  },
-  {
-    "type": "@prepend",
-    "named": false
-  },
-  {
-    "type": "@pushhead",
-    "named": false
-  },
-  {
-    "type": "@pushtail",
-    "named": false
-  },
-  {
-    "type": "@put",
-    "named": false
-  },
-  {
-    "type": "@refcount",
-    "named": false
-  },
-  {
-    "type": "@remove",
-    "named": false
-  },
-  {
-    "type": "@reset",
-    "named": false
-  },
-  {
     "type": "@rnd",
-    "named": false
-  },
-  {
-    "type": "@schedule",
-    "named": false
-  },
-  {
-    "type": "@seek",
     "named": false
   },
   {
@@ -2324,27 +2107,7 @@
     "named": false
   },
   {
-    "type": "@seterrors",
-    "named": false
-  },
-  {
-    "type": "@size",
-    "named": false
-  },
-  {
-    "type": "@sort",
-    "named": false
-  },
-  {
-    "type": "@space",
-    "named": false
-  },
-  {
     "type": "@srv",
-    "named": false
-  },
-  {
-    "type": "@startrecording",
     "named": false
   },
   {
@@ -2360,147 +2123,7 @@
     "named": false
   },
   {
-    "type": "@stoprecording",
-    "named": false
-  },
-  {
-    "type": "@submul",
-    "named": false
-  },
-  {
-    "type": "@tail",
-    "named": false
-  },
-  {
     "type": "@tcp",
-    "named": false
-  },
-  {
-    "type": "@tell",
-    "named": false
-  },
-  {
-    "type": "@tensor_address",
-    "named": false
-  },
-  {
-    "type": "@tensor_allocate",
-    "named": false
-  },
-  {
-    "type": "@tensor_bind",
-    "named": false
-  },
-  {
-    "type": "@tensor_card",
-    "named": false
-  },
-  {
-    "type": "@tensor_cast",
-    "named": false
-  },
-  {
-    "type": "@tensor_dimensions",
-    "named": false
-  },
-  {
-    "type": "@tensor_embed",
-    "named": false
-  },
-  {
-    "type": "@tensor_empty",
-    "named": false
-  },
-  {
-    "type": "@tensor_extract",
-    "named": false
-  },
-  {
-    "type": "@tensor_import",
-    "named": false
-  },
-  {
-    "type": "@tensor_index",
-    "named": false
-  },
-  {
-    "type": "@tensor_index_address",
-    "named": false
-  },
-  {
-    "type": "@tensor_index_offset",
-    "named": false
-  },
-  {
-    "type": "@tensor_isdevice",
-    "named": false
-  },
-  {
-    "type": "@tensor_ishost",
-    "named": false
-  },
-  {
-    "type": "@tensor_length",
-    "named": false
-  },
-  {
-    "type": "@tensor_offset",
-    "named": false
-  },
-  {
-    "type": "@tensor_ondevice",
-    "named": false
-  },
-  {
-    "type": "@tensor_onhost",
-    "named": false
-  },
-  {
-    "type": "@tensor_ordinal",
-    "named": false
-  },
-  {
-    "type": "@tensor_project",
-    "named": false
-  },
-  {
-    "type": "@tensor_read",
-    "named": false
-  },
-  {
-    "type": "@tensor_region",
-    "named": false
-  },
-  {
-    "type": "@tensor_shape",
-    "named": false
-  },
-  {
-    "type": "@tensor_size",
-    "named": false
-  },
-  {
-    "type": "@tensor_stride",
-    "named": false
-  },
-  {
-    "type": "@tensor_write",
-    "named": false
-  },
-  {
-    "type": "@tensordims_align",
-    "named": false
-  },
-  {
-    "type": "@tensordims_denormalize",
-    "named": false
-  },
-  {
-    "type": "@tensordims_measure",
-    "named": false
-  },
-  {
-    "type": "@tensordims_normalize",
     "named": false
   },
   {
@@ -2508,19 +2131,7 @@
     "named": false
   },
   {
-    "type": "@tofloat",
-    "named": false
-  },
-  {
     "type": "@udp",
-    "named": false
-  },
-  {
-    "type": "@unique",
-    "named": false
-  },
-  {
-    "type": "@unused",
     "named": false
   },
   {
@@ -2533,10 +2144,6 @@
   },
   {
     "type": "@utf8",
-    "named": false
-  },
-  {
-    "type": "@val",
     "named": false
   },
   {
@@ -2580,6 +2187,10 @@
     "named": false
   },
   {
+    "type": "builtin",
+    "named": true
+  },
+  {
     "type": "char",
     "named": false
   },
@@ -2593,8 +2204,7 @@
   },
   {
     "type": "comment",
-    "named": true,
-    "extra": true
+    "named": true
   },
   {
     "type": "deque",

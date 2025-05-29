@@ -30,11 +30,11 @@ module.exports = grammar({
     // these definitions are OK in function scope
     function_scope_definition: $ => choice(
 	$.function_definition,
-	$.variable_definition,
-	$.comprehension_definition,
 	$.type_definition,
 	$.constant_definition,
-	$.enum_definition
+	$.enum_definition,
+	$.variable_definition,
+	$.comprehension_definition
     ),
 
     // these definitions are OK in class scope
@@ -53,7 +53,7 @@ module.exports = grammar({
     implements_declaration: $ => seq(alias("implements", $.keyword), $.typespec, ";"),
 
     function_definition: $ => seq(
-      alias(choice("function", "entry"), $.keyword),
+      seq(optional(alias(choice("export", "export!"), $.keyword)), optional(alias("shared", $.keyword)), alias(choice("function", "entry"), $.keyword)),
       $.typetuple, 
       $.identifier, 
       $.typetuple,
@@ -68,7 +68,7 @@ module.exports = grammar({
     ),
 
     class_definition: $ => seq(
-      alias(choice("class", "node"), $.keyword),
+      seq(optional(alias("shared", $.keyword)), alias(choice("class", "node"), $.keyword)),
       $.identifier,
       optional(seq(":", $.base_specifier_list)),
       $.class_body
@@ -85,6 +85,7 @@ module.exports = grammar({
     ),
 
     ctor_definition: $ => seq(
+      optional(alias("export", $.keyword)),
       alias(token(/([a-zA-Z0-9_\$]+::)*ctor/), $.keyword),
       $.typetuple,
       optional($.ctorinits),
@@ -132,7 +133,7 @@ module.exports = grammar({
     ctorinits: $ => seq(optional(":"), seq($.ctorinit, repeat(seq(",", $.ctorinit)))),
 
     // this grammar allows quoted and scoped identifiers everywhere identifiers occur, for simplicity
-    identifier: $ => choice(token(/«[^»\n]+»/), token(/([a-zA-Z0-9_\$]+::)*[a-zA-Z0-9_\$]+/)),
+    identifier: $ => choice(token(/«[^»\n]+»/), token(/([a-zA-Z_$][a-zA-Z0-9_$]*::)*[a-zA-Z_$][a-zA-Z0-9_$]*/)),
 
     id_list: $ => seq(
       $.identifier,
@@ -140,6 +141,7 @@ module.exports = grammar({
     ),
 
     constant_definition: $ => seq(
+      optional(alias("export", $.keyword)),
       alias("constant", $.keyword),
       $.identifier, 
       optional(seq(":", $.typespec)),
@@ -149,7 +151,8 @@ module.exports = grammar({
     ),
 
     type_definition: $ => seq(
-      alias("type",  $.keyword),
+      optional(alias("export", $.keyword)),
+      alias("type", $.keyword),
       $.identifier, 
       "=", 
       $.typespec, 
@@ -157,7 +160,8 @@ module.exports = grammar({
     ),
 
     enum_definition: $ => seq(
-      alias("enum",  $.keyword),
+      optional(alias("export", $.keyword)),
+      alias("enum", $.keyword),
       $.typespec,
       "{",
       $.id_list,
@@ -240,7 +244,7 @@ module.exports = grammar({
 
     // if we enumerate these exhaustively, then we must keep the list up to date with the compiler.
     // the advantage is the spell-checking of builtins in the editor.
-    builtin: $ => choice(
+    builtin: $ => token(choice(
       "@fwd",
       "@bwd",
       "@elt",
@@ -301,9 +305,9 @@ module.exports = grammar({
       "@mulsub",
       "@submul",
       "@sort",
-      token(/@getuser[0-9abAB]/),
-      token(/@setuser[0-9abAB]/),
-      token(/@clruser[0-9abAB]/),
+      /@getuser[0-9abAB]/,
+      /@setuser[0-9abAB]/,
+      /@clruser[0-9abAB]/,
       "@schedule",
       "@get",
       "@put",
@@ -344,7 +348,7 @@ module.exports = grammar({
       "@tensordims_denormalize",
       "@tensordims_measure",
       "@tensordims_normalize"
-    ),
+    )),
 
     builtin_expression: $ => prec(10, seq($.builtin, $.expression)),
 
@@ -490,7 +494,7 @@ module.exports = grammar({
       $.ioflag_literal
     ),
 
-    number_literal: $ => token(/[0-9][0-9a-fA-Fx._]*([uUzZsS][0-9]*)?/),
+    number_literal: $ => token(/[0-9][0-9A-Za-z._+-]*/),
     string_literal: $ => token(/"([^"\\]|\\.)*"/),
     symbol_literal: $ => token(/`([^`\\]|\\.)*`/),
     codepoint_literal: $ => token(/('([^'\\]|\\.)*')|\\u[0-9a-fA-F]+/),

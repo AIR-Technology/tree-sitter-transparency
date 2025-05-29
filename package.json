@@ -1,5 +1,29 @@
 {
   "name": "tree-sitter-transparency",
   "version": "0.0.1",
-  "main": "grammar.js"
+  "main": "grammar.js",
+  "devDependencies": {
+    "tree-sitter-javascript": "^0.23.1"
+  },
+  "scripts": {
+    "install": "node-gyp rebuild"
+  },
+  "gypfile": true,
+  "description": "tree-sitter Transparency parser",
+  "dependencies": {
+    "node-addon-api": "^8.3.1",
+    "node-gyp-build": "^4.8.4",
+    "web-tree-sitter": "^0.25.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIR-Technology/tree-sitter-transparency.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AIR-Technology/tree-sitter-transparency/issues"
+  },
+  "homepage": "https://github.com/AIR-Technology/tree-sitter-transparency#readme"
 }

@@ -107,14 +107,6 @@
         },
         {
           "type": "SYMBOL",
-          "name": "variable_definition"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "comprehension_definition"
-        },
-        {
-          "type": "SYMBOL",
           "name": "type_definition"
         },
         {
@@ -124,6 +116,14 @@
         {
           "type": "SYMBOL",
           "name": "enum_definition"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "variable_definition"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "comprehension_definition"
         }
       ]
     },
@@ -194,22 +194,70 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "function"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": "export"
+                      },
+                      {
+                        "type": "STRING",
+                        "value": "export!"
+                      }
+                    ]
+                  },
+                  "named": true,
+                  "value": "keyword"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "STRING",
+                    "value": "shared"
+                  },
+                  "named": true,
+                  "value": "keyword"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "function"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "entry"
+                  }
+                ]
               },
-              {
-                "type": "STRING",
-                "value": "entry"
-              }
-            ]
-          },
-          "named": true,
-          "value": "keyword"
+              "named": true,
+              "value": "keyword"
+            }
+          ]
         },
         {
           "type": "SYMBOL",
@@ -259,22 +307,44 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "class"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "STRING",
+                    "value": "shared"
+                  },
+                  "named": true,
+                  "value": "keyword"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "class"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "node"
+                  }
+                ]
               },
-              {
-                "type": "STRING",
-                "value": "node"
-              }
-            ]
-          },
-          "named": true,
-          "value": "keyword"
+              "named": true,
+              "value": "keyword"
+            }
+          ]
         },
         {
           "type": "SYMBOL",
@@ -361,6 +431,23 @@
     "ctor_definition": {
       "type": "SEQ",
       "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "export"
+              },
+              "named": true,
+              "value": "keyword"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
         {
           "type": "ALIAS",
           "content": {
@@ -758,7 +845,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "([a-zA-Z0-9_\\$]+::)*[a-zA-Z0-9_\\$]+"
+            "value": "([a-zA-Z_$][a-zA-Z0-9_$]*::)*[a-zA-Z_$][a-zA-Z0-9_$]*"
           }
         }
       ]
@@ -791,6 +878,23 @@
     "constant_definition": {
       "type": "SEQ",
       "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "export"
+              },
+              "named": true,
+              "value": "keyword"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
         {
           "type": "ALIAS",
           "content": {
@@ -843,6 +947,23 @@
       "type": "SEQ",
       "members": [
         {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "export"
+              },
+              "named": true,
+              "value": "keyword"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
           "type": "ALIAS",
           "content": {
             "type": "STRING",
@@ -872,6 +993,23 @@
     "enum_definition": {
       "type": "SEQ",
       "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "export"
+              },
+              "named": true,
+              "value": "keyword"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
         {
           "type": "ALIAS",
           "content": {
@@ -1599,418 +1737,412 @@
       }
     },
     "builtin": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "@fwd"
-        },
-        {
-          "type": "STRING",
-          "value": "@bwd"
-        },
-        {
-          "type": "STRING",
-          "value": "@elt"
-        },
-        {
-          "type": "STRING",
-          "value": "@ord"
-        },
-        {
-          "type": "STRING",
-          "value": "@key"
-        },
-        {
-          "type": "STRING",
-          "value": "@val"
-        },
-        {
-          "type": "STRING",
-          "value": "@del"
-        },
-        {
-          "type": "STRING",
-          "value": "@adv"
-        },
-        {
-          "type": "STRING",
-          "value": "@pop"
-        },
-        {
-          "type": "STRING",
-          "value": "@pophead"
-        },
-        {
-          "type": "STRING",
-          "value": "@poptail"
-        },
-        {
-          "type": "STRING",
-          "value": "@head"
-        },
-        {
-          "type": "STRING",
-          "value": "@tail"
-        },
-        {
-          "type": "STRING",
-          "value": "@nth"
-        },
-        {
-          "type": "STRING",
-          "value": "@append"
-        },
-        {
-          "type": "STRING",
-          "value": "@prepend"
-        },
-        {
-          "type": "STRING",
-          "value": "@pushhead"
-        },
-        {
-          "type": "STRING",
-          "value": "@pushtail"
-        },
-        {
-          "type": "STRING",
-          "value": "@augment"
-        },
-        {
-          "type": "STRING",
-          "value": "@remove"
-        },
-        {
-          "type": "STRING",
-          "value": "@unique"
-        },
-        {
-          "type": "STRING",
-          "value": "@cat"
-        },
-        {
-          "type": "STRING",
-          "value": "@index"
-        },
-        {
-          "type": "STRING",
-          "value": "@byte"
-        },
-        {
-          "type": "STRING",
-          "value": "@ordinal"
-        },
-        {
-          "type": "STRING",
-          "value": "@id"
-        },
-        {
-          "type": "STRING",
-          "value": "@name"
-        },
-        {
-          "type": "STRING",
-          "value": "@seek"
-        },
-        {
-          "type": "STRING",
-          "value": "@tell"
-        },
-        {
-          "type": "STRING",
-          "value": "@empty"
-        },
-        {
-          "type": "STRING",
-          "value": "@full"
-        },
-        {
-          "type": "STRING",
-          "value": "@depth"
-        },
-        {
-          "type": "STRING",
-          "value": "@space"
-        },
-        {
-          "type": "STRING",
-          "value": "@unused"
-        },
-        {
-          "type": "STRING",
-          "value": "@flush"
-        },
-        {
-          "type": "STRING",
-          "value": "@reset"
-        },
-        {
-          "type": "STRING",
-          "value": "@accept"
-        },
-        {
-          "type": "STRING",
-          "value": "@startrecording"
-        },
-        {
-          "type": "STRING",
-          "value": "@stoprecording"
-        },
-        {
-          "type": "STRING",
-          "value": "@isrecording"
-        },
-        {
-          "type": "STRING",
-          "value": "@geterrors"
-        },
-        {
-          "type": "STRING",
-          "value": "@seterrors"
-        },
-        {
-          "type": "STRING",
-          "value": "@defined"
-        },
-        {
-          "type": "STRING",
-          "value": "@refcount"
-        },
-        {
-          "type": "STRING",
-          "value": "@cap"
-        },
-        {
-          "type": "STRING",
-          "value": "@alignment"
-        },
-        {
-          "type": "STRING",
-          "value": "@size"
-        },
-        {
-          "type": "STRING",
-          "value": "@iosize"
-        },
-        {
-          "type": "STRING",
-          "value": "@ms1"
-        },
-        {
-          "type": "STRING",
-          "value": "@ls1"
-        },
-        {
-          "type": "STRING",
-          "value": "@byteswap"
-        },
-        {
-          "type": "STRING",
-          "value": "@tofloat"
-        },
-        {
-          "type": "STRING",
-          "value": "@fromfloat"
-        },
-        {
-          "type": "STRING",
-          "value": "@min"
-        },
-        {
-          "type": "STRING",
-          "value": "@max"
-        },
-        {
-          "type": "STRING",
-          "value": "@muladd"
-        },
-        {
-          "type": "STRING",
-          "value": "@mulsub"
-        },
-        {
-          "type": "STRING",
-          "value": "@submul"
-        },
-        {
-          "type": "STRING",
-          "value": "@sort"
-        },
-        {
-          "type": "TOKEN",
-          "content": {
+      "type": "TOKEN",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "@fwd"
+          },
+          {
+            "type": "STRING",
+            "value": "@bwd"
+          },
+          {
+            "type": "STRING",
+            "value": "@elt"
+          },
+          {
+            "type": "STRING",
+            "value": "@ord"
+          },
+          {
+            "type": "STRING",
+            "value": "@key"
+          },
+          {
+            "type": "STRING",
+            "value": "@val"
+          },
+          {
+            "type": "STRING",
+            "value": "@del"
+          },
+          {
+            "type": "STRING",
+            "value": "@adv"
+          },
+          {
+            "type": "STRING",
+            "value": "@pop"
+          },
+          {
+            "type": "STRING",
+            "value": "@pophead"
+          },
+          {
+            "type": "STRING",
+            "value": "@poptail"
+          },
+          {
+            "type": "STRING",
+            "value": "@head"
+          },
+          {
+            "type": "STRING",
+            "value": "@tail"
+          },
+          {
+            "type": "STRING",
+            "value": "@nth"
+          },
+          {
+            "type": "STRING",
+            "value": "@append"
+          },
+          {
+            "type": "STRING",
+            "value": "@prepend"
+          },
+          {
+            "type": "STRING",
+            "value": "@pushhead"
+          },
+          {
+            "type": "STRING",
+            "value": "@pushtail"
+          },
+          {
+            "type": "STRING",
+            "value": "@augment"
+          },
+          {
+            "type": "STRING",
+            "value": "@remove"
+          },
+          {
+            "type": "STRING",
+            "value": "@unique"
+          },
+          {
+            "type": "STRING",
+            "value": "@cat"
+          },
+          {
+            "type": "STRING",
+            "value": "@index"
+          },
+          {
+            "type": "STRING",
+            "value": "@byte"
+          },
+          {
+            "type": "STRING",
+            "value": "@ordinal"
+          },
+          {
+            "type": "STRING",
+            "value": "@id"
+          },
+          {
+            "type": "STRING",
+            "value": "@name"
+          },
+          {
+            "type": "STRING",
+            "value": "@seek"
+          },
+          {
+            "type": "STRING",
+            "value": "@tell"
+          },
+          {
+            "type": "STRING",
+            "value": "@empty"
+          },
+          {
+            "type": "STRING",
+            "value": "@full"
+          },
+          {
+            "type": "STRING",
+            "value": "@depth"
+          },
+          {
+            "type": "STRING",
+            "value": "@space"
+          },
+          {
+            "type": "STRING",
+            "value": "@unused"
+          },
+          {
+            "type": "STRING",
+            "value": "@flush"
+          },
+          {
+            "type": "STRING",
+            "value": "@reset"
+          },
+          {
+            "type": "STRING",
+            "value": "@accept"
+          },
+          {
+            "type": "STRING",
+            "value": "@startrecording"
+          },
+          {
+            "type": "STRING",
+            "value": "@stoprecording"
+          },
+          {
+            "type": "STRING",
+            "value": "@isrecording"
+          },
+          {
+            "type": "STRING",
+            "value": "@geterrors"
+          },
+          {
+            "type": "STRING",
+            "value": "@seterrors"
+          },
+          {
+            "type": "STRING",
+            "value": "@defined"
+          },
+          {
+            "type": "STRING",
+            "value": "@refcount"
+          },
+          {
+            "type": "STRING",
+            "value": "@cap"
+          },
+          {
+            "type": "STRING",
+            "value": "@alignment"
+          },
+          {
+            "type": "STRING",
+            "value": "@size"
+          },
+          {
+            "type": "STRING",
+            "value": "@iosize"
+          },
+          {
+            "type": "STRING",
+            "value": "@ms1"
+          },
+          {
+            "type": "STRING",
+            "value": "@ls1"
+          },
+          {
+            "type": "STRING",
+            "value": "@byteswap"
+          },
+          {
+            "type": "STRING",
+            "value": "@tofloat"
+          },
+          {
+            "type": "STRING",
+            "value": "@fromfloat"
+          },
+          {
+            "type": "STRING",
+            "value": "@min"
+          },
+          {
+            "type": "STRING",
+            "value": "@max"
+          },
+          {
+            "type": "STRING",
+            "value": "@muladd"
+          },
+          {
+            "type": "STRING",
+            "value": "@mulsub"
+          },
+          {
+            "type": "STRING",
+            "value": "@submul"
+          },
+          {
+            "type": "STRING",
+            "value": "@sort"
+          },
+          {
             "type": "PATTERN",
             "value": "@getuser[0-9abAB]"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
+          },
+          {
             "type": "PATTERN",
             "value": "@setuser[0-9abAB]"
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
+          },
+          {
             "type": "PATTERN",
             "value": "@clruser[0-9abAB]"
+          },
+          {
+            "type": "STRING",
+            "value": "@schedule"
+          },
+          {
+            "type": "STRING",
+            "value": "@get"
+          },
+          {
+            "type": "STRING",
+            "value": "@put"
+          },
+          {
+            "type": "STRING",
+            "value": "@join"
+          },
+          {
+            "type": "STRING",
+            "value": "@built"
+          },
+          {
+            "type": "STRING",
+            "value": "@ctcbuilt"
+          },
+          {
+            "type": "STRING",
+            "value": "@ctcetc"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_address"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_allocate"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_bind"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_card"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_cast"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_dimensions"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_embed"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_empty"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_extract"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_import"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_index"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_index_address"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_index_offset"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_isdevice"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_ishost"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_length"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_offset"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_ondevice"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_onhost"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_ordinal"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_project"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_read"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_region"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_shape"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_size"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_stride"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensor_write"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensordims_align"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensordims_denormalize"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensordims_measure"
+          },
+          {
+            "type": "STRING",
+            "value": "@tensordims_normalize"
           }
-        },
-        {
-          "type": "STRING",
-          "value": "@schedule"
-        },
-        {
-          "type": "STRING",
-          "value": "@get"
-        },
-        {
-          "type": "STRING",
-          "value": "@put"
-        },
-        {
-          "type": "STRING",
-          "value": "@join"
-        },
-        {
-          "type": "STRING",
-          "value": "@built"
-        },
-        {
-          "type": "STRING",
-          "value": "@ctcbuilt"
-        },
-        {
-          "type": "STRING",
-          "value": "@ctcetc"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_address"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_allocate"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_bind"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_card"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_cast"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_dimensions"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_embed"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_empty"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_extract"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_import"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_index"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_index_address"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_index_offset"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_isdevice"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_ishost"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_length"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_offset"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_ondevice"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_onhost"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_ordinal"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_project"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_read"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_region"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_shape"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_size"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_stride"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensor_write"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensordims_align"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensordims_denormalize"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensordims_measure"
-        },
-        {
-          "type": "STRING",
-          "value": "@tensordims_normalize"
-        }
-      ]
+        ]
+      }
     },
     "builtin_expression": {
       "type": "PREC",
@@ -3708,7 +3840,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[0-9][0-9a-fA-Fx._]*([uUzZsS][0-9]*)?"
+        "value": "[0-9][0-9A-Za-z._+-]*"
       }
     },
     "string_literal": {
@@ -3999,6 +4131,5 @@
   "precedences": [],
   "externals": [],
   "inline": [],
-  "supertypes": [],
-  "reserved": {}
+  "supertypes": []
 }
