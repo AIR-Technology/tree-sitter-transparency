@@ -107,4 +107,31 @@
 
 (add-to-list 'auto-mode-alist '("\\.t$" . transparency-mode))
 
-(add-hook 'transparency-mode-hook '(lambda () (set-fill-column 80) (setq case-fold-search nil) (setq indent-tabs-mode nil)) 't)
+;; Comment filling support for Transparency mode
+(add-hook 'transparency-mode-hook
+  '(lambda ()
+     (set-fill-column 80)
+     (setq case-fold-search nil)
+     (setq indent-tabs-mode nil)
+     
+     ;; Set up comment syntax for both // and /* */ style comments
+     (setq-local comment-start "// ")
+     (setq-local comment-end "")
+     (setq-local comment-start-skip "\\(//+\\|/\\*+\\)\\s *")
+     (setq-local comment-end-skip "\\s *\\(\\*+/\\)?")
+     
+     ;; Multi-line comment support
+     (setq-local comment-multi-line t)
+     (setq-local comment-continue " * ")
+     
+     ;; Enable adaptive filling for comments
+     (setq-local adaptive-fill-mode t)
+     (setq-local adaptive-fill-regexp "[ \t]*\\(//+[ \t]*\\|\\*+[ \t]*\\)")
+     (setq-local adaptive-fill-first-line-regexp "[ \t]*\\(//+[ \t]*\\|/\\*+[ \t]*\\)")
+     
+     ;; Paragraph boundaries for comments
+     (setq-local paragraph-start
+                 (concat "\\s-*\\(//\\|\\*\\|/\\*\\)?\\s-*$\\|" paragraph-start))
+     (setq-local paragraph-separate
+                 (concat "\\s-*\\(//\\|\\*\\)?\\s-*$\\|" paragraph-separate))
+     ) 't)

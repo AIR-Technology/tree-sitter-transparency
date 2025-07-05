@@ -289,6 +289,7 @@ module.exports = grammar({
       "@geterrors",
       "@seterrors",
       "@defined",
+      "@dataaddr",
       "@refcount",
       "@cap",
       "@alignment",
